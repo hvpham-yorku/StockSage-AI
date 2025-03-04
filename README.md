@@ -15,7 +15,71 @@ By leveraging virtual currency, historical market data, and AI-driven recommenda
 
 ## Installation
 
-(To be added later when the project setup is finalized)
+### Prerequisites
+- Python 3.12+
+- Node.js 16+
+- npm or yarn
+- Poetry (for Python dependency management)
+
+### Backend Setup
+1. Navigate to the backend directory:
+   ```
+   cd backend
+   ```
+
+2. Install Poetry if you haven't already by following the official installation guide:
+   [Install Poetry](https://python-poetry.org/docs/#installation)
+
+3. Install dependencies using Poetry:
+   ```
+   poetry install
+   ```
+
+4. Run the FastAPI server:
+   ```
+   python -m stocksage_api.main
+   ```
+   The API will be available at http://localhost:8000
+   
+   You can verify the server is running by visiting:
+   - http://localhost:8000/ - Welcome message
+   - http://localhost:8000/api/health - Health status
+   - http://localhost:8000/docs - Interactive API documentation
+
+### Frontend Setup
+1. Navigate to the frontend directory:
+   ```
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```
+   npm install
+   ```
+
+3. Create a `.env.local` file in the frontend directory with the following content:
+   ```
+   NEXT_PUBLIC_API_URL=http://localhost:8000
+   ```
+
+4. Run the development server:
+   ```
+   npm run dev
+   ```
+   
+5. Open your browser and navigate to http://localhost:3000 to see the application
+
+The frontend includes:
+- A dark-themed UI for better readability
+- Real-time connection to the backend API
+- Stock listing with price information
+- AI-powered stock recommendations
+
+### API Structure
+The frontend communicates with the backend through a typed API client located at `src/lib/api.ts`. This provides:
+- Type-safe API calls
+- Centralized error handling
+- Consistent data fetching patterns
 
 ## Contribution
 
