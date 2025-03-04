@@ -57,17 +57,12 @@ By leveraging virtual currency, historical market data, and AI-driven recommenda
    npm install
    ```
 
-3. Create a `.env.local` file in the frontend directory with the following content:
-   ```
-   NEXT_PUBLIC_API_URL=http://localhost:8000
-   ```
-
-4. Run the development server:
+3. Run the development server:
    ```
    npm run dev
    ```
    
-5. Open your browser and navigate to http://localhost:3000 to see the application
+4. Open your browser and navigate to http://localhost:3000 to see the application
 
 The frontend includes:
 - A dark-themed UI for better readability
