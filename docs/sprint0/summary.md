@@ -3,7 +3,7 @@
 
 ## Project Objective
 StockSage-AI is an educational web application designed to simulate stock trading with AI-powered insights. The goal is to provide a risk-free environment for students and beginners to learn about stock trading using virtual currency and historical market data and for more advanced traders to test out trading strategies. The platform bridges the gap between theoretical knowledge and practical experience, leveraging AI to enhance learning and decision-making.
-## Key Personas
+## Key Personas (Key Users)
 1. **Alex** – A finance student eager to apply theoretical knowledge in a simulated trading environment. Wants to understand portfolio management and develop trading strategies.
 2. **Jordan** – A new investor exploring stock trading as a hobby, looking to practice strategies in a risk-free environment.
 3. **Johnny** – An experienced investor with a preference for certain stocks, interested in comparing historical performance of different companies.
