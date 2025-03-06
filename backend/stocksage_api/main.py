@@ -3,8 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict, Any
 from datetime import datetime, timedelta
 import random
+from .routes import firebase_test  # Import the new route
 
-app = FastAPI(title="StockSage-AI API")
+app = FastAPI(
+    title="StockSage API",
+    description="FastAPI backend for StockSage-AI stock trading simulator",
+    version="0.1.0"
+)
 
 # Configure CORS
 app.add_middleware(
@@ -24,10 +29,13 @@ mock_stocks = [
     {"symbol": "TSLA", "name": "Tesla, Inc.", "price": 193.57, "change": -2.67},
 ]
 
+# Include routers
+app.include_router(firebase_test.router)
+
 # Root endpoint
 @app.get("/")
 async def root():
-    return {"message": "Hello from StockSage-AI Backend!"}
+    return {"message": "Welcome to StockSage API"}
 
 # Health check endpoint
 @app.get("/api/health")
