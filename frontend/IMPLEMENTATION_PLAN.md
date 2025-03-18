@@ -35,6 +35,8 @@ This document outlines the implementation plan for the StockSage-AI frontend. Th
    - Set up authentication context with Firebase
    - Implement social login options (Google, GitHub, etc.)
    - Create protected route wrapper component
+   - Implement user profile initialization with backend after successful registration
+   - Handle token refresh and expiration
 
 ### Pages to Implement
 ```
@@ -45,12 +47,14 @@ This document outlines the implementation plan for the StockSage-AI frontend. Th
 ```
 
 ### Authentication Implementation Notes
-- Use Firebase Authentication SDK directly in the frontend
-- Leverage Firebase's built-in UI components or create custom UI
+- Use Firebase Authentication SDK directly in the frontend for user registration, login, and password reset
+- After successful registration, call backend to initialize user profile
 - Store authentication state in React Context
-- Send Firebase ID tokens to backend for verification
-- Implement automatic token refresh
+- Send Firebase ID tokens to backend for verification with all API requests
+- Implement automatic token refresh to maintain authentication state
 - Use Firebase's built-in methods for password reset and email verification
+- Frontend is responsible for token refresh management
+- After login/registration, initialize user data in the backend
 
 ## Day 2: Dashboard and Stock Search
 
@@ -195,6 +199,7 @@ interface AuthState {
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
+  refreshToken: () => Promise<string>;
 }
 
 interface UserProfile {
@@ -239,7 +244,7 @@ const getIdToken = async () => {
   if (!user) {
     throw new Error("User not authenticated");
   }
-  return user.getIdToken();
+  return user.getIdToken(true); // Force refresh if needed
 };
 
 // Helper function to add auth headers to requests
@@ -252,10 +257,6 @@ const authHeader = async () => {
 
 const api = {
   auth: {
-    verifyToken: async () => {
-      const token = await getIdToken();
-      return axios.post('/api/auth/verify-token', { token });
-    },
     getProfile: async () => {
       const headers = await authHeader();
       return axios.get('/api/auth/profile', { headers });
@@ -264,6 +265,10 @@ const api = {
       const headers = await authHeader();
       return axios.put('/api/auth/profile', data, { headers });
     },
+    initializeUserProfile: async (userData) => {
+      const headers = await authHeader();
+      return axios.put('/api/auth/profile', userData, { headers });
+    }
   },
   stocks: {
     search: (query) => axios.get(`/api/stocks/search?query=${query}`),
@@ -331,4 +336,6 @@ const api = {
 5. Use client-side Firebase for authentication
 6. Implement proper form validation
 7. Use Chart.js or Recharts for data visualization
-8. Follow atomic design principles for components 
+8. Handle token refresh automatically
+9. Create user profile in backend after successful registration
+10. Follow atomic design principles for components 

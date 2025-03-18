@@ -9,27 +9,6 @@ http://localhost:8000
 
 ## Authentication Endpoints
 
-### Verify Firebase Token
-```
-POST /api/auth/verify-token
-```
-
-**Request Body:**
-```json
-{
-  "token": "firebase-id-token-here"
-}
-```
-
-**Response (200 OK):**
-```json
-{
-  "valid": true,
-  "user_id": "user123",
-  "expires": 1678104000
-}
-```
-
 ### Get User Profile
 ```
 GET /api/auth/profile
@@ -92,9 +71,24 @@ Authorization: Bearer firebase-id-token-here
 
 ### Authentication Implementation Notes
 - User registration, login, and password reset are handled directly by Firebase Authentication in the frontend
-- The backend only needs to verify tokens and manage user profile data
-- All protected endpoints will require a valid Firebase ID token in the Authorization header
+- The backend only verifies tokens and manages user profile data
+- All protected endpoints will verify Firebase ID tokens in the Authorization header
 - Token verification is handled by Firebase Admin SDK on the backend
+- User profiles are created after successful user registration in the frontend
+- The frontend is responsible for token refresh management
+
+## User Registration Flow
+1. User registers using Firebase Authentication on the frontend
+2. Frontend obtains ID token from Firebase
+3. Frontend includes ID token in Authorization header and calls backend to initialize user profile
+4. Backend verifies token, creates user profile in database, and returns profile data
+5. Frontend stores profile data in local state for immediate use
+
+## Token Refresh Flow
+1. Frontend maintains Firebase authentication state
+2. When token is about to expire, frontend automatically refreshes it
+3. All API requests use the current token from the authentication state
+4. If a request fails due to an invalid token, frontend refreshes token and retries
 
 ## Stock Endpoints
 
