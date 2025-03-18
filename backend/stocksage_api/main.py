@@ -3,7 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict, Any
 from datetime import datetime, timedelta
 import random
-from .routes import firebase_test  # Import the new route
+import sys
+
+# Try to import Firebase - if it fails, exit with error
+try:
+    from .routes import firebase_test
+    from .routes import auth  # Import the new auth routes
+    from .services.firebase_service import firebase_service
+except Exception as e:
+    print(f"ERROR: Failed to initialize Firebase: {str(e)}")
+    print("Please set up Firebase credentials correctly.")
+    print("Run 'python -m scripts.check_firebase_setup' for diagnostic information.")
+    sys.exit(1)
 
 app = FastAPI(
     title="StockSage API",
@@ -29,8 +40,40 @@ mock_stocks = [
     {"symbol": "TSLA", "name": "Tesla, Inc.", "price": 193.57, "change": -2.67},
 ]
 
+# Verify Firebase connection at startup
+try:
+    # Test Firebase connections by writing and reading data
+    timestamp = str(datetime.now())
+    
+    # Test Admin SDK
+    admin_test_data = {"message": "API Startup Test (Admin SDK)", "timestamp": timestamp}
+    firebase_service.admin_set_data("api_startup_test_admin", admin_test_data)
+    admin_result = firebase_service.admin_get_data("api_startup_test_admin")
+    
+    # Test Pyrebase
+    pyrebase_test_data = {"message": "API Startup Test (Pyrebase)", "timestamp": timestamp}
+    firebase_service.set_data("api_startup_test_pyrebase", pyrebase_test_data)
+    pyrebase_result = firebase_service.get_data("api_startup_test_pyrebase")
+    
+    if not admin_result or admin_result.get("message") != "API Startup Test (Admin SDK)":
+        print("ERROR: Firebase Admin SDK connection test failed - unexpected response")
+        print("Please check your Firebase credentials and configuration.")
+        sys.exit(1)
+        
+    if not pyrebase_result or pyrebase_result.get("message") != "API Startup Test (Pyrebase)":
+        print("ERROR: Pyrebase connection test failed - unexpected response")
+        print("Please check your Firebase credentials and configuration.")
+        sys.exit(1)
+        
+    print("✅ Firebase connections verified successfully (Admin SDK and Pyrebase)")
+except Exception as e:
+    print(f"ERROR: Firebase connection test failed: {str(e)}")
+    print("Please check your Firebase credentials and configuration.")
+    sys.exit(1)
+
 # Include routers
 app.include_router(firebase_test.router)
+app.include_router(auth.router)  # Add the auth router
 
 # Root endpoint
 @app.get("/")
