@@ -12,30 +12,33 @@ This document outlines the implementation plan for the StockSage-AI backend API.
 ## Day 1: Setup and Authentication
 
 ### Tasks
-1. **Setup Firebase Authentication**
-   - Configure Firebase Admin SDK
+1. **Setup Firebase Integration**
+   - Configure Firebase Admin SDK for token verification and administrative operations
+   - Configure Pyrebase for real-time database operations
    - Implement Firebase token verification middleware
    - Create user profile storage in Firebase Realtime Database
-   - Set up Firebase Authentication client configuration for frontend
+   - Set up Firebase configuration for authentication
 
 2. **Create Authentication Endpoints**
-   - Implement endpoint to verify Firebase tokens
+   - Implement middleware to verify Firebase tokens on protected routes
    - Create endpoint to fetch user profile data
-   - Set up endpoint to update user profile
-   - Implement protected route middleware
+   - Set up endpoint to initialize and update user profile
+   - Implement token verification utility functions
 
 ### API Endpoints to Implement
 ```
-POST /api/auth/verify-token
 GET /api/auth/profile
 PUT /api/auth/profile
 ```
 
-### Implementation Notes for Authentication
-- Firebase Authentication will handle user registration, login, and password reset directly from the frontend
-- The backend will only need to verify tokens and manage user profile data
-- Use Firebase Admin SDK for server-side verification of tokens
-- Store additional user data in Firebase Realtime Database
+### Authentication Implementation Notes
+- Backend will NOT handle user registration, login, or password reset - these are handled by Firebase Authentication on the frontend
+- Backend will only verify tokens and manage user profiles
+- Backend will create user profiles in Firebase Realtime Database after receiving verification that a new user has registered
+- All protected endpoints will verify Firebase ID tokens via middleware
+- Token verification will be handled automatically for each protected route, not as a separate API call
+- Will use Firebase Admin SDK for token verification and user management
+- Will use Pyrebase for real-time database operations
 
 ## Day 2: Stock Data Integration
 
@@ -220,7 +223,9 @@ GET /api/education/tips
 ```
 
 ## Implementation Notes
-1. Use Firebase Realtime Database for all data storage
+1. Use both Firebase Admin SDK and Pyrebase for different purposes:
+   - Firebase Admin SDK: Authentication, token verification, user management
+   - Pyrebase: Real-time database operations, data streaming
 2. Implement proper error handling for all endpoints
 3. Use dependency injection for services
 4. Cache frequently accessed stock data to reduce API calls
@@ -282,5 +287,6 @@ async def get_user_portfolios(user_id: str = Depends(get_user_id)):
 2. Frontend obtains ID token from Firebase
 3. Frontend includes ID token in Authorization header for API requests
 4. Backend verifies token using Firebase Admin SDK
-5. Backend extracts user ID from verified token
-6. Backend uses user ID to fetch/modify user-specific data 
+5. Backend extracts user ID from verified token 
+6. Backend creates user profile in database if it's a new user
+7. Backend uses user ID to fetch/modify user-specific data 
