@@ -22,7 +22,7 @@ export function Header() {
     */
     const router = useRouter()
     const handleSignIn = () => {
-        router.push("/login")
+        router.push("/login");
     } //Why not just put router.push in the on click?
 
     const handleLogout = () => {
@@ -35,9 +35,14 @@ export function Header() {
 
     
     let loggedOutHeader = (
-    <Button onClick={handleSignIn} className="px-4 py-2 bg-blue-500 text-white rounded">
-        Sign In
-    </Button>
+    <>
+        <Button onClick={() => { router.push("/about"); }} className="px-4 py-2 bg-primary cursor-pointer text-primary-foreground rounded">
+            About us
+        </Button>
+        <Button onClick={handleSignIn} className="px-4 py-2 bg-primary cursor-pointer text-primary-foreground rounded">
+            Sign In
+        </Button>
+    </>
     );
 
     return (
@@ -47,7 +52,7 @@ export function Header() {
                 {/* Header Name */}
                 <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1 font-semibold text-xl">
-                        <span className="text-primary">StockSage-AI</span>
+                        <span onClick={() => { router.push("/")}}className="text-primary cursor-pointer">StockSage-AI</span>
                     </div>
                 </div>
 
