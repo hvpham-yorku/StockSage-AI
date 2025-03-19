@@ -25,12 +25,23 @@ export function Header() {
         router.push("/login");
     } //Why not just put router.push in the on click?
 
-    const handleLogout = () => {
-        signOut(auth).then(() => {
+    const handleLogout = async () => {
+        try {
+            if (!auth) {
+                throw new Error("Authentication is not initialized");
+            }
+            
+            await signOut(auth);
             console.log("Signed Out!");
-        }).catch((e) => {
-            console.log(e);
-        });
+            
+            // You could optionally perform any API clean-up here
+            // Such as notifying the backend that the user has logged out
+            // e.g., api.auth.logout() if such an endpoint exists
+            
+            router.push("/");
+        } catch (error) {
+            console.error("Error signing out:", error);
+        }
     }
 
     
