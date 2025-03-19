@@ -3,6 +3,12 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
+import ProfileDropdown from "./profile-dropdown";
+import PageLoader from "./condtionalRender";
+
+import { auth } from "@/firebase/config";
+import { signOut } from "firebase/auth";
+
 export function Header() {
 
     /*
@@ -17,8 +23,23 @@ export function Header() {
     const router = useRouter()
     const handleSignIn = () => {
         router.push("/login")
+    } //Why not just put router.push in the on click?
+
+    const handleLogout = () => {
+        signOut(auth).then(() => {
+            console.log("Signed Out!");
+        }).catch((e) => {
+            console.log(e);
+        });
     }
-    const isAuthenticated = false;
+
+    
+    let loggedOutHeader = (
+    <Button onClick={handleSignIn} className="px-4 py-2 bg-blue-500 text-white rounded">
+        Sign In
+    </Button>
+    );
+
     return (
         <header className="border-b bg-card">
             <div className="flex h-16 items-center px-4">
@@ -32,21 +53,18 @@ export function Header() {
 
                 {/* Header top options */}
                 <div className="ml-auto flex items-center gap-4">
-                    {isAuthenticated ? (
+                    <PageLoader fallback={loggedOutHeader}>
+                        {/* Logged in header */}
                         <>
                             <input
                                 type="text"
                                 placeholder="Search stocks..."
                                 className="px-3 py-2 border rounded"
                             />
-                            <button className="px-4 py-2 border rounded">Profile</button>
+                            <ProfileDropdown onLogout={handleLogout} />
                             <button className="px-4 py-2 border rounded">Settings</button>
                         </>
-                    ) : (
-                        <Button onClick={handleSignIn} className="px-4 py-2 bg-blue-500 text-white rounded">
-                            Sign In
-                        </Button>
-                    )}
+                    </PageLoader>
                 </div>
             </div>
         </header>
