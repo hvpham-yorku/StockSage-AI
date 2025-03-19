@@ -12,6 +12,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
+import { auth } from "@/firebase/config";
+import { signInWithEmailAndPassword } from "firebase/auth";
+
 export function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -23,27 +26,15 @@ export function LoginForm() {
         e.preventDefault();
         setIsLoading(true);
 
-        try {
-            const response = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-                credentials: "include",
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                toast.success("Login successful! Redirecting...");
-                router.push("/dashboard");
-            } else {
-                toast.error(data.detail || "Login failed. Please check your credentials.");
-            }
-        } catch (error) {
-            toast.error("An unexpected error occurred. Please try again.");
-        } finally {
+        signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            router.push("/dashboard");
             setIsLoading(false);
-        }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
     };
 
     return (
