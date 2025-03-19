@@ -12,9 +12,20 @@ import Link from "next/link";
 export default function Home() {
     const router = useRouter();
 
+    const signUp = (
+    <div className="mt-10 flex flex-wrap gap-4 justify-center lg:justify-start">
+        <Button
+            size="lg"
+            className="text-lg px-8 py-6 rounded-full"
+            onClick={() => router.push("/signup")} // Redirects to signup page
+        >
+            Sign Up Now
+        </Button>
+    </div>
+    )
+
     const home = (
     <div>
-        <Header />
         <div className="container relative mx-auto px-4 py-24 flex h-screen items-center px-8">
             <div className="max-w-3xl text-center lg:text-left">
                 <div className="flex items-center justify-center lg:justify-start mb-6">
@@ -33,15 +44,10 @@ export default function Home() {
                     investment decisions and maximize your returns.
                 </p>
 
-                <div className="mt-10 flex flex-wrap gap-4 justify-center lg:justify-start">
-                    <Button
-                        size="lg"
-                        className="text-lg px-8 py-6 rounded-full"
-                        onClick={() => router.push("/signup")} // Redirects to signup page
-                    >
-                        Sign Up Now
-                    </Button>
-                </div>
+                <PageLoader fallback={signUp}>
+                    {/* Don't render signUp button when user is signed in */}
+                    <></>
+                </PageLoader>
             </div>
         </div>
     </div>
