@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 
+//Firebase
+import { auth } from "@/firebase/config";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,27 +41,21 @@ export function SignupForm() {
 
         setIsLoading(true);
 
-        try {
-            const response = await fetch("/api/auth/signup", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ firstName, lastName, email, password }),
-                credentials: "include",
-            });
+        createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            // Signed up 
+            const user = userCredential.user;
+            console.log(user);
 
-            const data = await response.json();
-
-            if (response.ok) {
-                toast.success("Account created successfully! Redirecting...");
-                router.push("/dashboard");
-            } else {
-                toast.error(data.detail || "Signup failed. Please try again.");
-            }
-        } catch (error) {
-            toast.error("An unexpected error occurred. Please try again.");
-        } finally {
-            setIsLoading(false);
-        }
+            //Redirect user to dashboard
+            router.push('/dashboard');
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            //Just log errors for now
+            console.log(error);
+        });
     };
 
     return (
