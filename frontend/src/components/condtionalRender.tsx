@@ -9,11 +9,11 @@ import { onAuthStateChanged } from "firebase/auth";
 
 /**
  * Conditional render based on whether user is logged in or not.
- * Will have a plaveholder loading screen while waiting
+ * Will have a placeholder loading screen while waiting
  *
  * @param   fallback The JSX element or redirect link to go to if user is not logged in
  * @param   children The JSX element if the user is logged in
- * @returns A useful value.
+ * @returns { JSX.Element } dependent on auth 
  */
 export default function PageLoader({
     fallback,
