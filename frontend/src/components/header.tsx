@@ -18,7 +18,7 @@ export function Header() {
     const [searchQuery, setSearchQuery] = useState("");
     const { sidebarOpen, setSidebarOpen } = useSidebar();
 
-        //TODO
+        // TODO
     const handleSignIn = () => {
         router.push("/login");
     };
