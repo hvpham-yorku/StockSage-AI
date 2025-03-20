@@ -56,6 +56,7 @@ async function getCurrentUserToken(): Promise<string | null> {
     return null;
   }
   
+  await auth.authStateReady();
   const user = auth.currentUser;
   
   if (!user) {

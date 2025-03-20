@@ -11,3 +11,117 @@
 2025-03-20 11:45:58,771 - stocksage_api.services.firebase_service - INFO - Firebase Admin SDK initialized successfully
 2025-03-20 11:45:58,891 - stocksage_api.services.firebase_service - INFO - Pyrebase initialized successfully for real-time operations
 2025-03-20 11:45:58,917 - stocksage_api.main - ERROR - Failed to initialize Firebase: No module named 'yfinance'
+2025-03-20 14:13:26,730 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 1
+2025-03-20 14:13:26,731 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 11
+2025-03-20 14:13:26,732 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 14
+2025-03-20 14:13:26,732 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 15
+2025-03-20 14:13:26,732 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 16
+2025-03-20 14:13:26,732 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 17
+2025-03-20 14:13:26,732 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 18
+2025-03-20 14:13:26,733 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 19
+2025-03-20 14:13:26,733 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 20
+2025-03-20 14:13:26,975 - stocksage_api.services.firebase_service - INFO - Using service account from: //home//james//stock-trading-simulator-test-firebase-adminsdk-fbsvc-797ce0292c.json
+2025-03-20 14:13:27,007 - stocksage_api.services.firebase_service - INFO - Firebase Admin SDK initialized successfully
+2025-03-20 14:13:27,082 - stocksage_api.services.firebase_service - INFO - Pyrebase initialized successfully for real-time operations
+2025-03-20 14:13:28,361 - stocksage_api.main - INFO - Successfully imported yfinance
+2025-03-20 14:13:28,736 - oauth2client.client - INFO - Refreshing access_token
+2025-03-20 14:13:29,011 - stocksage_api.main - INFO - Firebase connections verified successfully
+2025-03-20 14:31:58,863 - stocksage_api.main - ERROR - Failed to initialize Firebase: invalid syntax. Perhaps you forgot a comma? (firebase_service.py, line 65)
+2025-03-20 14:31:59,620 - stocksage_api.main - ERROR - Failed to initialize Firebase: invalid syntax. Perhaps you forgot a comma? (firebase_service.py, line 65)
+2025-03-20 14:32:01,292 - stocksage_api.main - ERROR - Failed to initialize Firebase: invalid syntax. Perhaps you forgot a comma? (firebase_service.py, line 65)
+2025-03-20 14:32:18,095 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 1
+2025-03-20 14:32:18,096 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 11
+2025-03-20 14:32:18,096 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 14
+2025-03-20 14:32:18,097 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 15
+2025-03-20 14:32:18,097 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 16
+2025-03-20 14:32:18,097 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 17
+2025-03-20 14:32:18,097 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 18
+2025-03-20 14:32:18,097 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 19
+2025-03-20 14:32:18,097 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 20
+2025-03-20 14:32:18,364 - stocksage_api.services.firebase_service - INFO - Using service account from: //home//james//stock-trading-simulator-test-firebase-adminsdk-fbsvc-797ce0292c.json
+2025-03-20 14:32:18,393 - stocksage_api.services.firebase_service - INFO - Firebase Admin SDK initialized successfully
+2025-03-20 14:32:18,466 - stocksage_api.services.firebase_service - INFO - Pyrebase initialized successfully for real-time operations
+2025-03-20 14:32:18,960 - stocksage_api.main - INFO - Successfully imported yfinance
+2025-03-20 14:32:19,288 - oauth2client.client - INFO - Refreshing access_token
+2025-03-20 14:32:19,521 - stocksage_api.main - INFO - Firebase connections verified successfully
+2025-03-20 14:48:23,493 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 1
+2025-03-20 14:48:23,494 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 11
+2025-03-20 14:48:23,494 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 14
+2025-03-20 14:48:23,494 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 15
+2025-03-20 14:48:23,494 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 16
+2025-03-20 14:48:23,495 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 17
+2025-03-20 14:48:23,495 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 18
+2025-03-20 14:48:23,495 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 19
+2025-03-20 14:48:23,495 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 20
+2025-03-20 14:48:23,759 - stocksage_api.services.firebase_service - INFO - Using service account from: //home//james//stock-trading-simulator-test-firebase-adminsdk-fbsvc-797ce0292c.json
+2025-03-20 14:48:23,794 - stocksage_api.services.firebase_service - INFO - Firebase Admin SDK initialized successfully
+2025-03-20 14:48:23,875 - stocksage_api.services.firebase_service - INFO - Pyrebase initialized successfully for real-time operations
+2025-03-20 14:48:24,328 - stocksage_api.main - INFO - Successfully imported yfinance
+2025-03-20 14:48:24,608 - oauth2client.client - INFO - Refreshing access_token
+2025-03-20 14:48:24,883 - stocksage_api.main - INFO - Firebase connections verified successfully
+2025-03-20 14:48:25,495 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 1
+2025-03-20 14:48:25,496 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 11
+2025-03-20 14:48:25,497 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 14
+2025-03-20 14:48:25,497 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 15
+2025-03-20 14:48:25,497 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 16
+2025-03-20 14:48:25,497 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 17
+2025-03-20 14:48:25,497 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 18
+2025-03-20 14:48:25,498 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 19
+2025-03-20 14:48:25,498 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 20
+2025-03-20 14:48:25,662 - stocksage_api.services.firebase_service - INFO - Using service account from: //home//james//stock-trading-simulator-test-firebase-adminsdk-fbsvc-797ce0292c.json
+2025-03-20 14:48:25,691 - stocksage_api.services.firebase_service - INFO - Firebase Admin SDK initialized successfully
+2025-03-20 14:48:25,775 - stocksage_api.services.firebase_service - INFO - Pyrebase initialized successfully for real-time operations
+2025-03-20 14:48:26,223 - stocksage_api.main - INFO - Successfully imported yfinance
+2025-03-20 14:48:26,443 - oauth2client.client - INFO - Refreshing access_token
+2025-03-20 14:48:26,695 - stocksage_api.main - INFO - Firebase connections verified successfully
+2025-03-20 14:48:32,208 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 1
+2025-03-20 14:48:32,209 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 11
+2025-03-20 14:48:32,209 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 14
+2025-03-20 14:48:32,210 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 15
+2025-03-20 14:48:32,210 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 16
+2025-03-20 14:48:32,210 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 17
+2025-03-20 14:48:32,210 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 18
+2025-03-20 14:48:32,211 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 19
+2025-03-20 14:48:32,211 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 20
+2025-03-20 14:48:32,443 - stocksage_api.services.firebase_service - INFO - Using service account from: //home//james//stock-trading-simulator-test-firebase-adminsdk-fbsvc-797ce0292c.json
+2025-03-20 14:48:32,473 - stocksage_api.services.firebase_service - INFO - Firebase Admin SDK initialized successfully
+2025-03-20 14:48:32,536 - stocksage_api.services.firebase_service - INFO - Pyrebase initialized successfully for real-time operations
+2025-03-20 14:48:32,901 - stocksage_api.main - INFO - Successfully imported yfinance
+2025-03-20 14:48:33,110 - oauth2client.client - INFO - Refreshing access_token
+2025-03-20 14:48:33,346 - stocksage_api.main - INFO - Firebase connections verified successfully
+2025-03-20 14:49:28,125 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 1
+2025-03-20 14:49:28,126 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 11
+2025-03-20 14:49:28,126 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 14
+2025-03-20 14:49:28,126 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 15
+2025-03-20 14:49:28,126 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 16
+2025-03-20 14:49:28,126 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 17
+2025-03-20 14:49:28,127 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 18
+2025-03-20 14:49:28,127 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 19
+2025-03-20 14:49:28,127 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 20
+2025-03-20 14:49:28,381 - stocksage_api.services.firebase_service - INFO - Using service account from: //home//james//stock-trading-simulator-test-firebase-adminsdk-fbsvc-797ce0292c.json
+2025-03-20 14:49:28,423 - stocksage_api.services.firebase_service - INFO - Firebase Admin SDK initialized successfully
+2025-03-20 14:49:28,503 - stocksage_api.services.firebase_service - INFO - Pyrebase initialized successfully for real-time operations
+2025-03-20 14:49:28,914 - stocksage_api.main - INFO - Successfully imported yfinance
+2025-03-20 14:49:29,131 - oauth2client.client - INFO - Refreshing access_token
+2025-03-20 14:49:29,386 - stocksage_api.main - INFO - Firebase connections verified successfully
+2025-03-20 14:49:31,709 - stocksage_api.main - ERROR - Failed to initialize Firebase: invalid syntax (firebase_service.py, line 186)
+2025-03-20 14:49:37,909 - stocksage_api.main - ERROR - Failed to initialize Firebase: invalid syntax (firebase_service.py, line 186)
+2025-03-20 14:49:42,010 - stocksage_api.main - ERROR - Failed to initialize Firebase: invalid syntax (firebase_service.py, line 186)
+2025-03-20 14:49:43,464 - stocksage_api.main - ERROR - Failed to initialize Firebase: invalid syntax (firebase_service.py, line 186)
+2025-03-20 14:49:48,904 - stocksage_api.main - ERROR - Failed to initialize Firebase: invalid syntax (firebase_service.py, line 186)
+2025-03-20 14:49:58,527 - stocksage_api.main - ERROR - Failed to initialize Firebase: invalid syntax (firebase_service.py, line 186)
+2025-03-20 14:50:01,079 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 1
+2025-03-20 14:50:01,080 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 11
+2025-03-20 14:50:01,080 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 14
+2025-03-20 14:50:01,081 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 15
+2025-03-20 14:50:01,081 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 16
+2025-03-20 14:50:01,081 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 17
+2025-03-20 14:50:01,081 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 18
+2025-03-20 14:50:01,081 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 19
+2025-03-20 14:50:01,082 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 20
+2025-03-20 14:50:01,265 - stocksage_api.services.firebase_service - INFO - Using service account from: //home//james//stock-trading-simulator-test-firebase-adminsdk-fbsvc-797ce0292c.json
+2025-03-20 14:50:01,298 - stocksage_api.services.firebase_service - INFO - Firebase Admin SDK initialized successfully
+2025-03-20 14:50:01,362 - stocksage_api.services.firebase_service - INFO - Pyrebase initialized successfully for real-time operations
+2025-03-20 14:50:01,824 - stocksage_api.main - INFO - Successfully imported yfinance
+2025-03-20 14:50:02,041 - oauth2client.client - INFO - Refreshing access_token
+2025-03-20 14:50:02,299 - stocksage_api.main - INFO - Firebase connections verified successfully

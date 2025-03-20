@@ -182,8 +182,8 @@ class FirebaseService:
         return self.admin_auth.set_custom_user_claims(user_id, custom_claims)
     
     def verify_id_token(self, id_token: TokenType) -> Dict[str, Any]:
-        """Verify an ID token using Firebase Admin SDK"""
-        return self.admin_auth.verify_id_token(id_token)
+        """Verify an ID token using Firebase Admin SDK. Skew must be set here to allow slight clock differences"""
+        return self.admin_auth.verify_id_token(id_token, check_revoked=True, clock_skew_seconds=30)
     
     def sign_in_with_email_password(self, email: str, password: str) -> Dict[str, Any]:
         """Sign in with email and password using Pyrebase"""

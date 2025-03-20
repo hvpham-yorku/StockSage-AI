@@ -2,32 +2,19 @@
 
 import {useEffect, useState} from "react";
 import {useParams} from "next/navigation";
-import api from "@/api";
 import {Card, CardHeader, CardTitle, CardContent} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-interface Stock {
-    symbol: string;
-    name: string;
-    price: number;
-    change: number;
-    company_description: string;
-}
+import { api } from "@/lib/api";
+import { Stock, StockRecommendation } from "@/lib/api";
 
-interface Recommendation {
-    symbol: string;
-    name: string;
-    recommendation: string;
-    confidence: number;
-    analysis: string;
-}
 
 export default function StockDetailPage() {
     const {symbol} = useParams();
     const [stock, setStock] = useState<Stock>();
-    const [recommendation, setRecommendation] = useState<Recommendation>();
+    const [recommendation, setRecommendation] = useState<StockRecommendation>();
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string>();
     const router = useRouter();
@@ -39,11 +26,11 @@ export default function StockDetailPage() {
         const fetchStockData = async () => {
             try {
                 const [stockResponse, recommendationResponse] = await Promise.all([
-                    api.stocks.getStock(symbol as string),
+                    api.stocks.getOne(symbol as string),
                     api.stocks.getRecommendation(symbol as string),
                 ]);
-                setStock(stockResponse.data);
-                setRecommendation(recommendationResponse.data);
+                setStock(stockResponse);
+                setRecommendation(recommendationResponse);
             } catch (err) {
                 console.error("Error fetching stock details:", err);
                 setError(`Stock symbol "${symbol}" not found. Redirecting to stock list...`);
@@ -74,7 +61,7 @@ export default function StockDetailPage() {
                     <p className={`text-sm ${stock?.change >= 0 ? "text-green-500" : "text-red-500"}`}> {/** Typescript is giving errors here */}
                         Change: {stock?.change >= 0 ? `+${stock?.change}` : stock?.change}%
                     </p>
-                    <p className="text-gray-600 mt-4">{stock?.company_description}</p>
+                    <p className="text-gray-600 mt-4">{stock?.name}</p>
 
                     {/* Recommendation Section */}
                     {recommendation && (

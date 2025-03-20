@@ -17,7 +17,7 @@ export default function Home() {
     /** REMOVE
      * This is just a debug console.log
      */
-    api.auth.updateProfile( {} );
+    api.auth.getProfile();
 
     const signUp = (
     <div className="mt-10 flex flex-wrap gap-4 justify-center lg:justify-start">
