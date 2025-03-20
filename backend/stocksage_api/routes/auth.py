@@ -1,8 +1,16 @@
-from fastapi import APIRouter, HTTPException, Depends, Header, Response, status
+from fastapi import APIRouter, HTTPException, Depends, Security, Response, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any
 from ..services.firebase_service import firebase_service
 import time
+
+# Create security scheme
+security = HTTPBearer(
+    scheme_name="Bearer Authentication",
+    description="Enter your Firebase ID token",
+    auto_error=True
+)
 
 router = APIRouter(prefix="/api/auth", tags=["authentication"])
 
@@ -49,17 +57,12 @@ class TokenVerificationResponse(BaseModel):
     email: Optional[str] = None
 
 # Helper functions
-async def get_current_user(authorization: str = Header(..., description="Firebase ID token with Bearer prefix")):
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(security)):
     """Verify the Firebase ID token and return the user"""
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail="Invalid authentication credentials. Token must start with 'Bearer '"
-        )
-    
-    token = authorization.replace("Bearer ", "")
-    
     try:
+        # Get token from the credentials
+        token = credentials.credentials
+        
         # Verify the ID token
         decoded_token = firebase_service.verify_id_token(token)
         return decoded_token

@@ -35,6 +35,7 @@ out/
 .vscode/
 *.swp
 *.swo
+backend/api.log
 
 # OS
 .DS_Store
