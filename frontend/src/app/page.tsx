@@ -9,13 +9,15 @@ import { useRouter } from "next/navigation";
 import PageLoader from '@/components/condtionalRender';
 import Link from "next/link";
 
+import { api } from "@/lib/api";
+
 export default function Home() {
     const router = useRouter();
 
     /** REMOVE
      * This is just a debug console.log
      */
-
+    api.auth.updateProfile( {} );
 
     const signUp = (
     <div className="mt-10 flex flex-wrap gap-4 justify-center lg:justify-start">

@@ -47,6 +47,8 @@ export function SignupForm() {
             const user = userCredential.user;
             console.log(user);
 
+            
+
             //Redirect user to dashboard
             router.push('/dashboard');
         })
