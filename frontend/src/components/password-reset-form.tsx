@@ -66,7 +66,7 @@ export function PasswordResetForm() {
                     )}
                 </CardContent>
                 <CardFooter className="flex justify-center">
-                    <Link href="/auth/login" className="flex items-center text-sm text-primary hover:underline">
+                    <Link href="/login" className="flex items-center text-sm text-primary hover:underline">
                         <ArrowLeft className="mr-1 h-4 w-4" />
                         Back to login
                     </Link>

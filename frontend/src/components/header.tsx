@@ -11,41 +11,22 @@ import { auth } from "@/firebase/config";
 import { signOut } from "firebase/auth";
 
 export function Header() {
-
-     /*
-        TODO
-        Header has StockSage Name, Search, Profile, and Settings
-        TODO
-
-        TODO
-        Add Search, Profile, and Settings only when signed in
-        TODO
-    */
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
 
+       // TODO
     const handleSignIn = () => {
-        router.push("/login");
+        router.push("/auth/login");
     };
 
-    const handleLogout = async () => {
-        try {
-            if (!auth) {
-                throw new Error("Authentication is not initialized");
-            }
-            
-            await signOut(auth);
+    const handleLogout = () => {
+        signOut(auth).then(() => {
             console.log("Signed Out!");
-
-            // You could optionally perform any API clean-up here
-            // Such as notifying the backend that the user has logged out
-            // e.g., api.auth.logout() if such an endpoint exists
-            
-            router.push("/");
-        } catch (error) {
-            console.error("Error signing out:", error);
-        }
-    }
+        }).catch((e) => {
+            console.log(e);
+        });
+        router.push("/");
+    };
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -54,6 +35,7 @@ export function Header() {
             setSearchQuery(""); // Clear the input field after submission
         }
     };
+
 
     let loggedOutHeader = (
         <>

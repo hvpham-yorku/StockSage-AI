@@ -27,37 +27,26 @@ export function LoginForm() {
         e.preventDefault();
         setIsLoading(true);
 
-        try {
-            if (!auth) {
-                throw new Error("Authentication is not initialized");
-            }
-            
+        try { 
             console.log("Attempting to sign in with Firebase...");
             // First authenticate with Firebase
             await signInWithEmailAndPassword(auth, email, password);
             console.log("Firebase sign-in successful");
             
             // Wait for token to be available
-            setTimeout(async () => {
-                try {
-                    console.log("Verifying token with backend...");
-                    // Verify the token with the backend
-                    await api.auth.verifyToken();
-                    console.log("Token verified successfully");
-                    
-                    console.log("Fetching user profile...");
-                    // Fetch the user profile
-                    await api.auth.getProfile();
-                    console.log("Profile fetched successfully");
-                    
-                    router.push("/dashboard");
-                } catch (error) {
-                    console.error("Backend verification error:", error);
-                    toast.error("Failed to authenticate with backend. Please try again.");
-                } finally {
-                    setIsLoading(false);
-                }
-            }, 1500); // Longer delay to ensure Firebase token is ready
+            try {             
+                console.log("Fetching user profile...");
+                // Fetch the user profile
+                await api.auth.getProfile();
+                console.log("Profile fetched successfully");
+                
+                router.push("/dashboard");
+            } catch (error) {
+                console.error("Backend verification error:", error);
+                toast.error("Failed to authenticate with backend. Please try again.");
+            } finally {
+                setIsLoading(false);
+            }
             
         } catch (error) {
             console.error("Firebase auth error:", error);
