@@ -110,7 +110,7 @@ export function SignupForm() {
                 <CardFooter className="flex justify-center">
                     <div className="text-sm text-muted-foreground">
                         Already have an account?{" "}
-                        <Link href="/auth/login" className="text-primary cursor-pointer hover:underline">
+                        <Link href="/login" className="text-primary cursor-pointer hover:underline">
                             Sign in
                         </Link>
                     </div>
