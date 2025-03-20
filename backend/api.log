@@ -1,0 +1,13 @@
+2025-03-20 11:45:58,048 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 1
+2025-03-20 11:45:58,058 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 11
+2025-03-20 11:45:58,058 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 14
+2025-03-20 11:45:58,059 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 15
+2025-03-20 11:45:58,059 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 16
+2025-03-20 11:45:58,059 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 17
+2025-03-20 11:45:58,059 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 18
+2025-03-20 11:45:58,059 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 19
+2025-03-20 11:45:58,059 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 20
+2025-03-20 11:45:58,726 - stocksage_api.services.firebase_service - INFO - Using service account from: //home//james//stock-trading-simulator-test-firebase-adminsdk-fbsvc-797ce0292c.json
+2025-03-20 11:45:58,771 - stocksage_api.services.firebase_service - INFO - Firebase Admin SDK initialized successfully
+2025-03-20 11:45:58,891 - stocksage_api.services.firebase_service - INFO - Pyrebase initialized successfully for real-time operations
+2025-03-20 11:45:58,917 - stocksage_api.main - ERROR - Failed to initialize Firebase: No module named 'yfinance'

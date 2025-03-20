@@ -1,8 +1,16 @@
-from fastapi import APIRouter, HTTPException, Depends, Header, Response, status
+from fastapi import APIRouter, HTTPException, Depends, Security, Response, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any
 from ..services.firebase_service import firebase_service
 import time
+
+# Create security scheme
+security = HTTPBearer(
+    scheme_name="Bearer Authentication",
+    description="Enter your Firebase ID token",
+    auto_error=True
+)
 
 router = APIRouter(prefix="/api/auth", tags=["authentication"])
 
@@ -36,18 +44,25 @@ class UserResponse(BaseModel):
     updated_at: Optional[int] = None
     preferences: Optional[UserPreferences] = None
 
+class RegistrationResponse(BaseModel):
+    """Response model for user registration"""
+    message: str
+    user_id: str
+    profile: Dict[str, Any]
+
+class TokenVerificationResponse(BaseModel):
+    """Response model for token verification"""
+    valid: bool
+    user_id: str
+    email: Optional[str] = None
+
 # Helper functions
-async def get_current_user(authorization: str = Header(...)):
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(security)):
     """Verify the Firebase ID token and return the user"""
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail="Invalid authentication credentials"
-        )
-    
-    token = authorization.replace("Bearer ", "")
-    
     try:
+        # Get token from the credentials
+        token = credentials.credentials
+        
         # Verify the ID token
         decoded_token = firebase_service.verify_id_token(token)
         return decoded_token
@@ -58,7 +73,9 @@ async def get_current_user(authorization: str = Header(...)):
         )
 
 # Routes
-@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=Dict[str, Any])
+@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=RegistrationResponse,
+            summary="Register new user",
+            description="Register a new user with Firebase Authentication. This endpoint is primarily for testing/development as registration is typically handled on the frontend.")
 async def register_user(user_data: UserRegistration):
     """Register a new user with Firebase Authentication
     
@@ -88,18 +105,19 @@ async def register_user(user_data: UserRegistration):
         # Save user profile
         firebase_service.create_user_profile(new_user.uid, user_profile)
         
-        return {
-            "message": "User registered successfully", 
-            "user_id": new_user.uid,
-            "profile": user_profile
-        }
+        return RegistrationResponse(
+            message="User registered successfully", 
+            user_id=new_user.uid,
+            profile=user_profile
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail=f"Failed to register user: {str(e)}"
         )
 
-@router.get("/profile", response_model=UserResponse)
+@router.get("/profile", response_model=UserResponse, summary="Get user profile", 
+            description="Retrieves the authenticated user's profile. Requires a valid Firebase ID token.")
 async def get_profile(current_user: Dict[str, Any] = Depends(get_current_user)):
     """Get the profile of the authenticated user"""
     try:
@@ -132,7 +150,8 @@ async def get_profile(current_user: Dict[str, Any] = Depends(get_current_user)):
             detail=f"Failed to get user profile: {str(e)}"
         )
 
-@router.put("/profile", response_model=UserResponse)
+@router.put("/profile", response_model=UserResponse, summary="Update user profile",
+           description="Updates the authenticated user's profile. Requires a valid Firebase ID token.")
 async def update_profile(
     user_data: UserProfileUpdate,
     current_user: Dict[str, Any] = Depends(get_current_user)
@@ -142,6 +161,9 @@ async def update_profile(
         user_id = current_user.get("uid")
         # Get existing profile
         existing_profile = firebase_service.get_user_profile(user_id) or {}
+        
+        # Ensure the profile has an id
+        existing_profile["id"] = user_id
         
         # Update with new data
         update_data = user_data.model_dump(exclude_unset=True, exclude_none=True)
@@ -160,7 +182,7 @@ async def update_profile(
                     existing_preferences.update(value.dict(exclude_unset=True))
                     
                 existing_profile["preferences"] = existing_preferences
-            elif value is not None:
+            elif value is not None and key != "id":  # Skip id field from update data
                 existing_profile[key] = value
         
         # Add updated_at timestamp
@@ -184,7 +206,9 @@ async def update_profile(
             detail=f"Failed to update profile: {str(e)}"
         )
 
-@router.delete("/profile", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/profile", status_code=status.HTTP_204_NO_CONTENT, 
+             summary="Delete user profile",
+             description="Deletes the authenticated user's profile and optionally the Firebase Auth user. Requires a valid Firebase ID token.")
 async def delete_profile(
     current_user: Dict[str, Any] = Depends(get_current_user), 
     delete_auth: bool = False
@@ -207,12 +231,14 @@ async def delete_profile(
             detail=f"Failed to delete user profile: {str(e)}"
         )
 
-@router.get("/verify", response_model=Dict[str, Any])
+@router.get("/verify", response_model=TokenVerificationResponse, 
+           summary="Verify auth token",
+           description="Verifies that the current Firebase ID token is valid. Use this endpoint to check authentication status.")
 async def verify_token(current_user: Dict[str, Any] = Depends(get_current_user)):
     """Verify that the current token is valid"""
     # If we get here, the token is valid (dependency would have failed otherwise)
-    return {
-        "valid": True, 
-        "user_id": current_user.get("uid"),
-        "email": current_user.get("email")
-    } 
+    return TokenVerificationResponse(
+        valid=True, 
+        user_id=current_user.get("uid"),
+        email=current_user.get("email")
+    ) 
