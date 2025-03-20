@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import api from "@/api"; // Import API client
+import { api } from "@/lib/api";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 interface Stock {
     symbol: string;
     name: string;
-    price: number;
+    price: number | null;
     change: number;
     company_description: string;
 }
@@ -18,23 +18,36 @@ interface Stock {
 export default function StocksPage() {
     const [stocks, setStocks] = useState<Stock[]>([]);
     const [filteredStocks, setFilteredStocks] = useState<Stock[]>([]);
-    const [searchQuery, setSearchQuery] = useState(""); // Search input state
+    const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        api.stocks.search("")
-            .then((response) => {
-                setStocks(response.data);
-                setFilteredStocks(response.data); // Initially show all stocks
-            })
-            .catch((err) => {
+        const fetchStocks = async () => {
+            try {
+                const response = await api.stocks.getAll();
+
+                console.log("API Response:", response);
+                const stockData = Array.isArray(response) ? response : response.data;
+
+                if (!Array.isArray(stockData)) {
+                    throw new Error("Invalid API response format");
+                }
+
+                setStocks(stockData);
+                setFilteredStocks(stockData);
+                setError(null);
+            } catch (err) {
                 console.error("Error fetching stocks:", err);
-                setError("Failed to fetch stocks.");
-            })
-            .finally(() => {
+                setError("Failed to fetch stocks. Please try again later.");
+                setStocks([]);
+                setFilteredStocks([]);
+            } finally {
                 setIsLoading(false);
-            });
+            }
+        };
+
+        fetchStocks();
     }, []);
 
     // Handle search input
@@ -43,7 +56,7 @@ export default function StocksPage() {
         setSearchQuery(query);
 
         if (!query) {
-            setFilteredStocks(stocks); // Reset to all stocks if search is empty
+            setFilteredStocks(stocks);
             return;
         }
 
@@ -53,15 +66,16 @@ export default function StocksPage() {
                 stock.name.toLowerCase().includes(query) ||
                 stock.symbol.toLowerCase().includes(query)
         );
+
         setFilteredStocks(filtered);
     };
 
-    if (isLoading) return <p className="text-center">Loading stocks...</p>;
+    if (isLoading) return <p className="text-center">Loading stock market data...</p>;
     if (error) return <p className="text-center text-red-500">{error}</p>;
 
     return (
         <div className="max-w-5xl mx-auto p-4">
-            <h1 className="text-2xl font-bold text-center mb-4">Stock Market Data</h1>
+            <h1 className="text-2xl font-bold text-center mb-4">All Available Stocks</h1>
 
             {/* Search Bar */}
             <div className="mb-4 flex gap-2">
@@ -72,7 +86,7 @@ export default function StocksPage() {
                     onChange={handleSearch}
                     className="w-full px-3 py-2 border rounded"
                 />
-                <Button onClick={() => setSearchQuery("")}>Clear</Button>
+                <Button onClick={() => { setSearchQuery(""); setFilteredStocks(stocks); }}>Clear</Button>
             </div>
 
             {/* Stock Grid */}
@@ -85,7 +99,9 @@ export default function StocksPage() {
                                     <CardTitle>{stock.name} ({stock.symbol})</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <p className="text-lg font-semibold">Price: ${stock.price.toFixed(2)}</p>
+                                    <p className="text-lg font-semibold">
+                                        Price: ${stock.price !== null ? stock.price.toFixed(2) : "N/A"}
+                                    </p>
                                     <p className={`text-sm ${stock.change >= 0 ? "text-green-500" : "text-red-500"}`}>
                                         Change: {stock.change >= 0 ? `+${stock.change}` : stock.change}%
                                     </p>
