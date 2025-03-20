@@ -84,6 +84,16 @@ export function LoginForm() {
                         <Button type="submit" className="w-full" disabled={isLoading}>
                             {isLoading ? "Signing in..." : "Sign In"}
                         </Button>
+
+                        {/* Sign Up Button */}
+                        <Button
+                            variant="outline"
+                            className="w-full mt-2"
+                            onClick={() => router.push("/signup")}
+                            disabled={isLoading}
+                        >
+                            Sign Up
+                        </Button>
                     </form>
                 </CardContent>
             </Card>
