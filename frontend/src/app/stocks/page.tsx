@@ -1,19 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-interface Stock {
-    symbol: string;
-    name: string;
-    price: number | null;
-    change: number;
-    company_description: string;
-}
+import { api, Stock, StockRecommendation } from "@/lib/api";
 
 export default function StocksPage() {
     const [stocks, setStocks] = useState<Stock[]>([]);
@@ -28,7 +21,7 @@ export default function StocksPage() {
                 const response = await api.stocks.getAll();
 
                 console.log("API Response:", response);
-                const stockData = Array.isArray(response) ? response : response.data;
+                const stockData = response;
 
                 if (!Array.isArray(stockData)) {
                     throw new Error("Invalid API response format");
