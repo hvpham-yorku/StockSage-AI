@@ -18,7 +18,6 @@ export function Header() {
     const [searchQuery, setSearchQuery] = useState("");
     const { sidebarOpen, setSidebarOpen } = useSidebar();
 
-    // TODO
     const handleSignIn = () => {
         router.push("/login");
     };
@@ -29,6 +28,7 @@ export function Header() {
         }).catch((e) => {
             console.log(e);
         });
+        router.push("/");
     };
 
     const handleSearch = (e: React.FormEvent) => {
