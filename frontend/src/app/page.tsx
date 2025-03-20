@@ -17,7 +17,7 @@ export default function Home() {
         <Button
             size="lg"
             className="text-lg px-8 py-6 rounded-full"
-            onClick={() => router.push("/auth/signup")} // Redirects to signup page
+            onClick={() => router.push("/signup")} // Redirects to signup page
         >
             Sign Up Now
         </Button>

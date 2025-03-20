@@ -43,63 +43,52 @@ export function SignupForm() {
         setIsLoading(true);
 
         try {
-            if (!auth) {
-                throw new Error("Authentication is not initialized");
-            }
-            
             console.log("Creating user with Firebase...");
             // First create the user with Firebase
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             console.log("User created successfully in Firebase");
             
             // Wait for token to be available
-            setTimeout(async () => {
-                try {
-                    // First verify the token with backend
-                    console.log("Verifying token with backend...");
-                    const verifyResult = await api.auth.verifyToken();
-                    console.log("Token verified successfully:", verifyResult);
-                    
-                    // Then update the user profile with additional information
-                    console.log("Updating user profile...");
-                    const profileData = {
-                        name: `${firstName} ${lastName}`,
-                        email: email,
-                        preferences: {
-                            theme: 'light',
-                            notifications_enabled: true,
-                            default_view: 'dashboard'
-                        }
-                    };
-                    
-                    console.log("Sending profile data:", profileData);
-                    const updatedProfile = await api.auth.updateProfile(profileData);
-                    console.log("Profile updated successfully:", updatedProfile);
-                    
-                    // Redirect user to dashboard
-                    toast.success("Account created successfully!");
-                    router.push('/dashboard');
-                } catch (error) {
-                    console.error("Backend error during signup:", error);
-                    
-                    // More detailed error handling
-                    const errorMessage = String(error);
-                    if (errorMessage.includes("verify")) {
-                        toast.error("Account created but unable to verify with backend. Please try logging in.");
-                    } else if (errorMessage.includes("CORS")) {
-                        toast.error("Server connection issue. Please try again later.");
-                    } else if (errorMessage.includes("500")) {
-                        toast.error("Server error. The account was created but profile setup failed.");
-                    } else {
-                        toast.error("Account created but profile setup failed. Please try logging in.");
+            try {
+                // Then update the user profile with additional information
+                console.log("Updating user profile...");
+                const profileData = {
+                    name: `${firstName} ${lastName}`,
+                    email: email,
+                    preferences: {
+                        theme: 'light',
+                        notifications_enabled: true,
+                        default_view: 'dashboard'
                     }
-                    
-                    // Redirect to login page instead
-                    setTimeout(() => router.push('/login'), 2000);
-                } finally {
-                    setIsLoading(false);
+                };
+                
+                console.log("Sending profile data:", profileData);
+                const updatedProfile = await api.auth.updateProfile(profileData);
+                console.log("Profile updated successfully:", updatedProfile);
+                
+                // Redirect user to dashboard
+                toast.success("Account created successfully!");
+                router.push('/dashboard');
+            } catch (error) {
+                console.error("Backend error during signup:", error);
+                
+                // More detailed error handling
+                const errorMessage = String(error);
+                if (errorMessage.includes("verify")) {
+                    toast.error("Account created but unable to verify with backend. Please try logging in.");
+                } else if (errorMessage.includes("CORS")) {
+                    toast.error("Server connection issue. Please try again later.");
+                } else if (errorMessage.includes("500")) {
+                    toast.error("Server error. The account was created but profile setup failed.");
+                } else {
+                    toast.error("Account created but profile setup failed. Please try logging in.");
                 }
-            }, 2500); // Even longer delay to ensure Firebase token is ready
+                
+                // Redirect to login page instead
+                router.push('/login');
+            } finally {
+                setIsLoading(false);
+            }
             
         } catch (error) {
             console.error("Firebase error during signup:", error);
@@ -161,7 +150,7 @@ export function SignupForm() {
                 <CardFooter className="flex justify-center">
                     <div className="text-sm text-muted-foreground">
                         Already have an account?{" "}
-                        <Link href="/auth/login" className="text-primary cursor-pointer hover:underline">
+                        <Link href="/login" className="text-primary cursor-pointer hover:underline">
                             Sign in
                         </Link>
                     </div>
