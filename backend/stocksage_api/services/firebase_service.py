@@ -112,7 +112,12 @@ class FirebaseService:
     # Real-time operations using Pyrebase
     def get_data(self, path: PathType) -> Optional[Dict[str, Any]]:
         """Retrieve data from specified path using Pyrebase"""
-        return self.rtdb.child(path).get().val()
+        try:
+            return self.rtdb.child(path).get().val()
+        except Exception as e:
+            logger.error(f"Network error while getting data from {path}: {str(e)}")
+            # Consider whether to raise or return None based on your error handling strategy
+            return None
     
     def set_data(self, path: PathType, data: DataType) -> PyrebaseResponse:
         """Set data at specified path using Pyrebase"""
@@ -183,7 +188,21 @@ class FirebaseService:
     
     def verify_id_token(self, id_token: TokenType) -> Dict[str, Any]:
         """Verify an ID token using Firebase Admin SDK"""
-        return self.admin_auth.verify_id_token(id_token)
+        try:
+            return self.admin_auth.verify_id_token(id_token, clock_skew_seconds=30)
+        except auth.ExpiredIdTokenError:
+            logger.warning("Token expired - rejecting request")
+            raise
+        except auth.InvalidIdTokenError as e:
+            if "Token used too early" in str(e):
+                logger.warning("Token timing issue detected - check server clock sync")
+            raise
+        except Exception as e:
+            error_message = str(e)
+            if "quota exceeded" in error_message.lower() or "429" in error_message:
+                logger.warning("Firebase rate limit exceeded")
+                raise ValueError("Service temporarily unavailable due to high traffic. Please try again later.")
+            raise
     
     def sign_in_with_email_password(self, email: str, password: str) -> Dict[str, Any]:
         """Sign in with email and password using Pyrebase"""
@@ -195,7 +214,11 @@ class FirebaseService:
 
     def refresh_token(self, refresh_token: str) -> Dict[str, Any]:
         """Refresh the user's token"""
-        return self.pyrebase_auth.refresh(refresh_token)
+        try:
+            return self.pyrebase_auth.refresh(refresh_token)
+        except Exception as e:
+            logger.error(f"Failed to refresh token: {str(e)}")
+            raise
 
     # User Profile Methods
     def get_user_profile(self, user_id: UserIdType) -> Optional[Dict[str, Any]]:

@@ -1,6 +1,5 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 
@@ -25,12 +24,14 @@ export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-console.log("Firebase connceted!");
+// Only log in client-side environments to prevent hydration mismatches
+if (typeof window !== 'undefined') {
+  console.log("Firebase connected!");
+  // Initialize analytics only on client side
+  const getAnalytics = () => import('firebase/analytics').then(({ getAnalytics }) => getAnalytics(app));
+  getAnalytics();
+}
+
 //Only for local emulator
 // connectAuthEmulator(auth, "http://127.0.0.1:9099");
 // connectFirestoreEmulator(db, "127.0.0.1", 8080);
-
-
-if (typeof window !== 'undefined') {
-  const analytics = getAnalytics(app);
-}

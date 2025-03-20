@@ -14,7 +14,7 @@ export function Header() {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
 
-        TODO
+       // TODO
     const handleSignIn = () => {
         router.push("/auth/login");
     };
@@ -25,6 +25,7 @@ export function Header() {
         }).catch((e) => {
             console.log(e);
         });
+        router.push("/");
     };
 
     const handleSearch = (e: React.FormEvent) => {

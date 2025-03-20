@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 import { auth } from "@/firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { api } from "@/lib/api";
 
 export function LoginForm() {
     const [email, setEmail] = useState("");
@@ -26,15 +27,33 @@ export function LoginForm() {
         e.preventDefault();
         setIsLoading(true);
 
-        signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            router.push("/dashboard");
+        try { 
+            console.log("Attempting to sign in with Firebase...");
+            // First authenticate with Firebase
+            await signInWithEmailAndPassword(auth, email, password);
+            console.log("Firebase sign-in successful");
+            
+            // Wait for token to be available
+            try {             
+                console.log("Fetching user profile...");
+                // Fetch the user profile
+                await api.auth.getProfile();
+                console.log("Profile fetched successfully");
+                
+                router.push("/dashboard");
+            } catch (error) {
+                console.error("Backend verification error:", error);
+                toast.error("Failed to authenticate with backend. Please try again.");
+            } finally {
+                setIsLoading(false);
+            }
+            
+        } catch (error) {
+            console.error("Firebase auth error:", error);
+            toast.error("Failed to sign in. Please check your credentials.");
+        } finally {
             setIsLoading(false);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-
+        }
     };
 
     return (
