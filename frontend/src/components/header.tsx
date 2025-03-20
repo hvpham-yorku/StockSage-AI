@@ -9,9 +9,9 @@ import PageLoader from "./condtionalRender";
 
 import { auth } from "@/firebase/config";
 import { signOut } from "firebase/auth";
-import {Menu} from "lucide-react";
+import { Menu } from "lucide-react";
 
-import { useSidebar} from "@/context/sidebarContext"
+import { useSidebar } from "@/context/sidebarContext";
 
 export function Header() {
     const router = useRouter();
@@ -23,11 +23,13 @@ export function Header() {
     };
 
     const handleLogout = () => {
-        signOut(auth).then(() => {
-            console.log("Signed Out!");
-        }).catch((e) => {
-            console.log(e);
-        });
+        signOut(auth)
+            .then(() => {
+                console.log("Signed Out!");
+            })
+            .catch((e) => {
+                console.log(e);
+            });
         router.push("/");
     };
 
@@ -38,18 +40,6 @@ export function Header() {
             setSearchQuery(""); // Clear the input field after submission
         }
     };
-
-
-    let loggedOutHeader = (
-        <>
-            <Button onClick={() => router.push("/about")} className="px-4 py-2 bg-primary cursor-pointer text-primary-foreground rounded">
-                About us
-            </Button>
-            <Button onClick={handleSignIn} className="px-4 py-2 bg-primary cursor-pointer text-primary-foreground rounded">
-                Sign In
-            </Button>
-        </>
-    );
 
     return (
         <header className="border-b bg-card">
@@ -69,21 +59,32 @@ export function Header() {
                     </div>
                 </div>
 
-                {/* Header top options */}
-                <div className="ml-auto flex items-center gap-4">
-                    <PageLoader fallback={loggedOutHeader}>
-                        {/* Logged in header */}
+                {/* Search Bar - Always Visible */}
+                <form onSubmit={handleSearch} className="flex gap-2 ml-auto">
+                    <input
+                        type="text"
+                        placeholder="Search stocks..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="px-3 py-2 border rounded"
+                    />
+                    <Button type="submit">Search</Button>
+                </form>
+
+                {/* User Options */}
+                <div className="ml-4 flex items-center gap-4">
+                    <PageLoader fallback={
                         <>
-                            <form onSubmit={handleSearch} className="flex gap-2">
-                                <input
-                                    type="text"
-                                    placeholder="Search stocks..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="px-3 py-2 border rounded"
-                                />
-                                <Button type="submit">Search</Button>
-                            </form>
+                            <Button onClick={() => router.push("/about")} className="px-4 py-2 bg-primary text-primary-foreground rounded">
+                                About us
+                            </Button>
+                            <Button onClick={handleSignIn} className="px-4 py-2 bg-primary text-primary-foreground rounded">
+                                Sign In
+                            </Button>
+                        </>
+                    }>
+                        {/* Logged-in Header */}
+                        <>
                             <ProfileDropdown onLogout={handleLogout} />
                             <button className="px-4 py-2 border rounded">Settings</button>
                         </>
