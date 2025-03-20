@@ -9,14 +9,17 @@ import PageLoader from "./condtionalRender";
 
 import { auth } from "@/firebase/config";
 import { signOut } from "firebase/auth";
+import {Menu} from "lucide-react";
+
+import { useSidebar} from "@/context/sidebarContext"
 
 export function Header() {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
+    const { sidebarOpen, setSidebarOpen } = useSidebar();
 
-       // TODO
     const handleSignIn = () => {
-        router.push("/auth/login");
+        router.push("/login");
     };
 
     const handleLogout = () => {
@@ -51,6 +54,11 @@ export function Header() {
     return (
         <header className="border-b bg-card">
             <div className="flex h-16 items-center px-4">
+                {/* Sidebar Toggle Button */}
+                <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Toggle sidebar</span>
+                </Button>
 
                 {/* Header Name */}
                 <div className="flex items-center gap-2">

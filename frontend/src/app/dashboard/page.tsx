@@ -1,7 +1,12 @@
-export default function Dashboard() {
+"use client";
+
+import { MainDashboard } from "@/components/main-dashboard";
+import MainDashboardLayout from "@/components/main-dashboard-layout";
+
+export default function DashboardPage() {
     return (
-        <div>
-            Dashboard placeholder
-        </div>
+        <MainDashboardLayout>
+            <MainDashboard />
+        </MainDashboardLayout>
     );
 }
