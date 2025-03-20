@@ -14,9 +14,8 @@ export function Header() {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
 
-        TODO
     const handleSignIn = () => {
-        router.push("/auth/login");
+        router.push("/login");
     };
 
     const handleLogout = () => {

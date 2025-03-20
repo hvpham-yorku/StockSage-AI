@@ -26,10 +26,10 @@ interface Recommendation {
 
 export default function StockDetailPage() {
     const {symbol} = useParams();
-    const [stock, setStock] = useState<Stock | null>(null);
-    const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
+    const [stock, setStock] = useState<Stock>();
+    const [recommendation, setRecommendation] = useState<Recommendation>();
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string>();
     const router = useRouter();
 
     useEffect(() => {
@@ -44,7 +44,6 @@ export default function StockDetailPage() {
                 ]);
                 setStock(stockResponse.data);
                 setRecommendation(recommendationResponse.data);
-                setError(null);
             } catch (err) {
                 console.error("Error fetching stock details:", err);
                 setError(`Stock symbol "${symbol}" not found. Redirecting to stock list...`);
@@ -72,7 +71,7 @@ export default function StockDetailPage() {
                 </CardHeader>
                 <CardContent>
                     <p className="text-lg font-semibold">Price: ${stock?.price.toFixed(2)}</p>
-                    <p className={`text-sm ${stock?.change >= 0 ? "text-green-500" : "text-red-500"}`}>
+                    <p className={`text-sm ${stock?.change >= 0 ? "text-green-500" : "text-red-500"}`}> {/** Typescript is giving errors here */}
                         Change: {stock?.change >= 0 ? `+${stock?.change}` : stock?.change}%
                     </p>
                     <p className="text-gray-600 mt-4">{stock?.company_description}</p>

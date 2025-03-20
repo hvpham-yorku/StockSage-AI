@@ -34,11 +34,11 @@ const api = {
             const headers = await authHeader();
             return apiClient.get("/auth/profile", { headers });
         },
-        updateProfile: async (data) => {
+        updateProfile: async (data: any) => { /** TODO Find out a type for data */
             const headers = await authHeader();
             return apiClient.put("/auth/profile", data, { headers });
         },
-        initializeUserProfile: async (userData) => {
+        initializeUserProfile: async (userData: any) => { /** TODO Find out a type for data */
             const headers = await authHeader();
             return apiClient.put("/auth/profile", userData, { headers });
         },
