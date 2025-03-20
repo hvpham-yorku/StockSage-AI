@@ -1,25 +1,75 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List, Dict, Any
-from datetime import datetime, timedelta
-import random
+from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
+from fastapi.openapi.utils import get_openapi
+from datetime import datetime
 import sys
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("api.log")
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # Try to import Firebase - if it fails, exit with error
 try:
     from .routes import firebase_test
-    from .routes import auth  # Import the new auth routes
+    from .routes import auth  # Import the auth routes
+    from .routes import public_stocks  # Import the public stock routes
+    from .routes import education  # Import the education routes
     from .services.firebase_service import firebase_service
 except Exception as e:
+    logger.error(f"Failed to initialize Firebase: {str(e)}")
     print(f"ERROR: Failed to initialize Firebase: {str(e)}")
     print("Please set up Firebase credentials correctly.")
     print("Run 'python -m scripts.check_firebase_setup' for diagnostic information.")
     sys.exit(1)
 
+# Import yfinance for use across the application
+try:
+    import yfinance as yf
+    logger.info("Successfully imported yfinance")
+except ImportError:
+    logger.error("Failed to import yfinance. Please install it with 'pip install yfinance'")
+    print("ERROR: Failed to import yfinance. Please install it with 'pip install yfinance'")
+    sys.exit(1)
+
 app = FastAPI(
     title="StockSage API",
-    description="FastAPI backend for StockSage-AI stock trading simulator",
-    version="0.1.0"
+    description="""
+Welcome to the StockSage-AI API documentation. This API provides access to stock market data, 
+company information, and AI-powered stock recommendations for educational purposes.
+
+## Key Features
+
+- **Real-time Stock Data**: Get current prices, daily changes, and trading volumes
+- **Historical Stock Data**: Retrieve price history for charting and analysis
+- **Company Information**: Access detailed profiles of publicly traded companies
+- **AI Recommendations**: Get buy, hold, or sell recommendations with confidence scores
+- **User Authentication**: Secure Firebase-based authentication for user accounts
+
+## API Sections
+
+- **Stocks & Market Data**: Endpoints for accessing stock information
+- **Authentication**: User registration, profile management, and token verification
+- **Educational Content**: Stock terms glossary and trading tips
+
+## Authentication
+
+Public endpoints (Stocks and Education) require no authentication.
+Protected endpoints under /api/auth/ (except /register) require a valid Firebase ID token.
+Use the Authorize button in the top-right corner with your Firebase token to access protected endpoints.
+    """,
+    version="0.1.0",
+    docs_url=None,  # We'll customize the docs endpoint
+    redoc_url=None,  # We'll customize the redoc endpoint
+    openapi_url="/api/openapi.json",
 )
 
 # Configure CORS
@@ -68,97 +118,142 @@ try:
         sys.exit(1)
         
     print("✅ Firebase connections verified successfully (Admin SDK and Pyrebase)")
+    logger.info("Firebase connections verified successfully")
 except Exception as e:
+    logger.error(f"Firebase connection test failed: {str(e)}")
     print(f"ERROR: Firebase connection test failed: {str(e)}")
     print("Please check your Firebase credentials and configuration.")
     sys.exit(1)
 
-# Include routers
-app.include_router(firebase_test.router)
-app.include_router(auth.router)  # Add the auth router
+# Custom OpenAPI function to enhance documentation
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    
+    openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+    )
+    
+    # Initialize components if it doesn't exist
+    if "components" not in openapi_schema:
+        openapi_schema["components"] = {}
+    
+    # Add security schemes for authentication
+    openapi_schema["components"]["securitySchemes"] = {
+        "bearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+            "description": "Enter your Firebase ID token (e.g. 'eyJhbGciOiJSUzI1...')"
+        }
+    }
+    
+    # Apply security only to authenticated endpoints
+    # This is a more precise approach - we'll explicitly set security for each path
+    for path in openapi_schema["paths"]:
+        # Only secure auth routes except registration
+        if "/api/auth/" in path and not path.endswith(("/register", "/register/")):
+            for method in openapi_schema["paths"][path]:
+                if method.lower() in ["get", "post", "put", "delete", "patch"]:
+                    # Add security requirement to this operation
+                    openapi_schema["paths"][path][method]["security"] = [{"bearerAuth": []}]
+    
+    # Add API tags with descriptions
+    openapi_schema["tags"] = [
+        {
+            "name": "Stocks & Market Data",
+            "description": "Endpoints for retrieving stock prices, history, and company information"
+        },
+        {
+            "name": "authentication",
+            "description": "User authentication and profile management endpoints"
+        },
+        {
+            "name": "education",
+            "description": "Stock market educational content and glossary"
+        }
+    ]
+    
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
 
-# Root endpoint
+app.openapi = custom_openapi
+
+# Custom Swagger UI with enhanced styling
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title=f"{app.title} - API Documentation",
+        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
+        swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js",
+        swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css",
+        swagger_favicon_url="https://fastapi.tiangolo.com/img/favicon.png",
+        swagger_ui_parameters={
+            "docExpansion": "none",
+            "defaultModelsExpandDepth": 2,
+            "defaultModelExpandDepth": 2,
+            "deepLinking": True,
+            "displayRequestDuration": True,
+            "filter": True,
+            "showExtensions": True,
+            "syntaxHighlight.theme": "monokai",
+            "oauth2RedirectUrl": app.swagger_ui_oauth2_redirect_url
+        }
+    )
+
+# Add custom ReDoc endpoint
+@app.get("/redoc", include_in_schema=False)
+async def custom_redoc_html():
+    return get_redoc_html(
+        openapi_url=app.openapi_url,
+        title=f"{app.title} - ReDoc Documentation",
+        redoc_js_url="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js",
+        redoc_favicon_url="https://fastapi.tiangolo.com/img/favicon.png",
+    )
+
+# Include routers
+app.include_router(auth.router)  # Add the auth router
+app.include_router(public_stocks.router)  # Add the public stocks router
+app.include_router(education.router)  # Add the education router
+app.include_router(firebase_test.router)  # Add the firebase test router
+
+# Root endpoint with improved documentation links
 @app.get("/")
 async def root():
-    return {"message": "Welcome to StockSage API"}
+    return {
+        "message": "Welcome to StockSage API",
+        "documentation": {
+            "swagger_ui": "/docs",
+            "openapi_schema": "/api/openapi.json"
+        },
+        "api_version": "0.1.0",
+        "status": "healthy",
+        "endpoints": {
+            "stocks": "/api/stocks",
+            "stock_search": "/api/stocks/search?query={query}",
+            "auth": "/api/auth",
+            "education": "/api/education"
+        }
+    }
 
 # Health check endpoint
 @app.get("/api/health")
 async def health_check():
-    return {"status": "healthy"}
-
-# Get all available stocks
-@app.get("/api/stocks", response_model=List[Dict[str, Any]])
-async def get_stocks():
-    return mock_stocks
-
-# Get a specific stock by symbol
-@app.get("/api/stocks/{symbol}", response_model=Dict[str, Any])
-async def get_stock(symbol: str):
-    for stock in mock_stocks:
-        if stock["symbol"] == symbol.upper():
-            return stock
-    raise HTTPException(status_code=404, detail=f"Stock with symbol {symbol} not found")
-
-# Get historical data for a stock
-@app.get("/api/stocks/{symbol}/history", response_model=List[Dict[str, Any]])
-async def get_stock_history(symbol: str, days: int = 30):
-    # Check if stock exists
-    stock_exists = False
-    current_price = 0
-    for stock in mock_stocks:
-        if stock["symbol"] == symbol.upper():
-            stock_exists = True
-            current_price = stock["price"]
-            break
-    
-    if not stock_exists:
-        raise HTTPException(status_code=404, detail=f"Stock with symbol {symbol} not found")
-    
-    # Generate mock historical data
-    history = []
-    today = datetime.now()
-    
-    for i in range(days, 0, -1):
-        date = today - timedelta(days=i)
-        # Generate a random price within a reasonable range of the current price
-        price_change = random.uniform(-5, 5)
-        price = max(0.01, current_price + price_change * (i / days))
-        
-        history.append({
-            "date": date.strftime("%Y-%m-%d"),
-            "price": round(price, 2),
-            "volume": random.randint(1000000, 10000000)
-        })
-    
-    return history
-
-# Get AI recommendation for a stock
-@app.get("/api/stocks/{symbol}/recommendation")
-async def get_stock_recommendation(symbol: str):
-    # Check if stock exists
-    stock_exists = False
-    for stock in mock_stocks:
-        if stock["symbol"] == symbol.upper():
-            stock_exists = True
-            current_stock = stock
-            break
-    
-    if not stock_exists:
-        raise HTTPException(status_code=404, detail=f"Stock with symbol {symbol} not found")
-    
-    # Generate a mock recommendation
-    sentiment = random.choice(["Buy", "Hold", "Sell"])
-    confidence = random.uniform(0.6, 0.95)
-    
     return {
-        "symbol": symbol.upper(),
-        "name": current_stock["name"],
-        "recommendation": sentiment,
-        "confidence": round(confidence, 2),
-        "analysis": f"Based on recent market trends and company performance, our AI model recommends a {sentiment} position for {current_stock['name']} with {round(confidence*100)}% confidence."
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "services": {
+            "firebase": "up",
+            "yfinance": "up"
+        },
+        "api_version": app.version
     }
 
 if __name__ == "__main__":
     import uvicorn
+    logger.info("Starting StockSage API server")
     uvicorn.run("stocksage_api.main:app", host="0.0.0.0", port=8000, reload=True)
