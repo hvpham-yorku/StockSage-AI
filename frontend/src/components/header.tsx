@@ -22,7 +22,7 @@ export function Header() {
     */
     const router = useRouter()
     const handleSignIn = () => {
-        router.push("/login");
+        router.push("/auth/login");
     } //Why not just put router.push in the on click?
 
     const handleLogout = () => {
