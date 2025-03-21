@@ -4,10 +4,10 @@ import Link from "next/link";
 import { BarChart3, BookOpen, Briefcase, Home, PieChart, School, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useSidebar } from "@/context/sidebarContext"; // ✅ Import sidebar context
+import { useSidebar } from "@/context/sidebarContext"; //
 
 export function Sidebar() {
-    const { sidebarOpen, setSidebarOpen } = useSidebar(); // ✅ Get sidebar state from context
+    const { sidebarOpen, setSidebarOpen } = useSidebar(); //
 
     return (
         <div
@@ -67,13 +67,13 @@ interface SidebarLinkProps {
 }
 
 function SidebarLink({ href, icon: Icon, label }: SidebarLinkProps) {
-    const { setSidebarOpen } = useSidebar(); // ✅ Sidebar closes on click
+    const { setSidebarOpen } = useSidebar(); //
 
     return (
         <Link
             href={href}
             className="flex items-center gap-3 px-3 py-2 text-muted-foreground rounded-lg hover:bg-muted transition-all"
-            onClick={() => setSidebarOpen(false)} // ✅ Close sidebar when clicking a link
+            onClick={() => setSidebarOpen(false)} //
         >
             <Icon className="h-5 w-5" />
             <span className="text-sm font-medium">{label}</span>
