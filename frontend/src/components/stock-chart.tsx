@@ -8,11 +8,10 @@ import { api, StockHistoryPoint } from "@/lib/api";
 interface StockChartProps {
   stockSymbol?: string
   stockName?: string
-  isPositive?: boolean
 }
 
-export function StockChart({ stockSymbol = "AAPL", stockName = "Apple Inc.", isPositive = true }: StockChartProps) {
-  const chartColor = isPositive ? "hsl(var(--success))" : "hsl(var(--destructive))"
+export function StockChart({ stockSymbol = "AAPL", stockName = "Apple Inc."}: StockChartProps) {
+  const chartColor = "green";
 
   const [data, setData] = useState<StockHistoryPoint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +51,12 @@ export function StockChart({ stockSymbol = "AAPL", stockName = "Apple Inc.", isP
             tick={{ fontSize: 12 }}
             tickFormatter={(value) => `$${value}`}
           />
-          <Tooltip formatter={(value) => [`$${value}`, "Price"]} labelFormatter={(label) => `${label}`} />
+          <Tooltip
+              formatter={(value) => [`$${value}`, "Price"]}
+              labelFormatter={(label) => `${label}`}
+              itemStyle={{color: "blue"}}
+              labelStyle={{color:'black'}}
+          />
           <Area type="monotone" dataKey="price" stroke={chartColor} fill={chartColor} fillOpacity={0.2} />
         </AreaChart>
       </ResponsiveContainer>
