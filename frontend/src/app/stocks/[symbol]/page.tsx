@@ -62,13 +62,11 @@ export default function StockDetailPage() {
 
                 <CardContent>
                     <p className="text-lg font-semibold">Price: ${stock?.price.toFixed(2)}</p>
-                    <p className={`text-sm ${stock?.change >= 0 ? "text-green-500" : "text-red-500"}`}>
-                        Change: {stock?.change >= 0 ? `+${stock?.change}` : stock?.change}%
-                    </p>
-
-                    <StockChart stockSymbol={symbol as string}>
-
-                    </StockChart>
+                    {stock && (
+                        <StockChart
+                            stockSymbol={symbol as string}
+                        />
+                    )}
 
                     <p className="text-gray-600 mt-4">{stock?.name}</p>
 
