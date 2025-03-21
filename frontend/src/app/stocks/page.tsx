@@ -5,9 +5,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
 import { api, Stock, StockRecommendation } from "@/lib/api";
-
 export default function StocksPage() {
     const [stocks, setStocks] = useState<Stock[]>([]);
     const [filteredStocks, setFilteredStocks] = useState<Stock[]>([]);
@@ -19,16 +17,13 @@ export default function StocksPage() {
         const fetchStocks = async () => {
             try {
                 const response = await api.stocks.getAll();
-
                 console.log("API Response:", response);
-                const stockData = response;
-
-                if (!Array.isArray(stockData)) {
+                if (!Array.isArray(response)) {
                     throw new Error("Invalid API response format");
                 }
 
-                setStocks(stockData);
-                setFilteredStocks(stockData);
+                setStocks(response);
+                setFilteredStocks(response);
                 setError(null);
             } catch (err) {
                 console.error("Error fetching stocks:", err);
