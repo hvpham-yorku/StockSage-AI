@@ -4,8 +4,11 @@ import {useEffect, useState} from "react";
 import {useParams} from "next/navigation";
 import {Card, CardHeader, CardTitle, CardContent} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
+import { StockChart } from "@/components/stock-chart";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 
 import { api, Stock, StockRecommendation } from "@/lib/api";
 
@@ -50,16 +53,23 @@ export default function StockDetailPage() {
     if (error) return <p className="text-center text-red-500">{error}</p>;
 
     return (
-        <div className="max-w-3xl mx-auto p-4">
+        <div className="max-w-5xl mx-auto p-4">
             <Card>
                 <CardHeader>
                     <CardTitle>{stock?.name} ({stock?.symbol})</CardTitle>
                 </CardHeader>
+
+
                 <CardContent>
                     <p className="text-lg font-semibold">Price: ${stock?.price.toFixed(2)}</p>
                     <p className={`text-sm ${stock?.change >= 0 ? "text-green-500" : "text-red-500"}`}>
                         Change: {stock?.change >= 0 ? `+${stock?.change}` : stock?.change}%
                     </p>
+
+                    <StockChart stockSymbol={symbol as string}>
+
+                    </StockChart>
+
                     <p className="text-gray-600 mt-4">{stock?.name}</p>
 
                     {/* Recommendation Section */}
