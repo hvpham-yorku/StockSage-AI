@@ -72,6 +72,13 @@ async function getCurrentUserToken(): Promise<string | null> {
     return token;
   } catch (error) {
     console.error('Error getting user token:', error);
+    // Handle expired token
+    if (error.code === 'auth/user-token-expired') {
+      console.warn("User token expired, signing out...");
+      await auth.signOut(); // Force sign out
+      window.location.href = "/login"; // Redirect to login page
+      return null;
+    }
     throw error;
   }
 }
@@ -130,7 +137,12 @@ async function fetchFromAPI<T>(
         `API error (${response.status}): ${errorMessage}`
       );
     }
-    
+
+    if (response.status === 204) {
+      // No content to parse — just return null (or undefined if you prefer)
+      return null as T;
+    }
+
     return response.json() as Promise<T>;
   } catch (error) {
     console.error(`Error fetching from ${endpoint}:`, error);
