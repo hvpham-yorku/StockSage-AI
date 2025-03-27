@@ -58,7 +58,15 @@ export default function Home() {
         //Not quite sure what I should do if the user is signed in
         //TODO
         <PageLoader fallback={home}>
-            {home}
+           <RedirectToDashboard />
         </PageLoader>
     );
+}
+
+function RedirectToDashboard() {
+    const router = useRouter();
+    useEffect(() => {
+        router.push('/dashboard')
+    }, [router]);
+    return null;
 }
