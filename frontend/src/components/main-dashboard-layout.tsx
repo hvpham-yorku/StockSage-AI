@@ -9,7 +9,7 @@ interface MainLayoutProps {
 }
 
 export default function MainDashboardLayout({ children }: MainLayoutProps) {
-    const { theme, setTheme } = useTheme();
+    const { isDark, toggleTheme } = useTheme(); // will be updating this later
     const {sidebarOpen, setSidebarOpen} = useSidebar(); // Sidebar initially closed
 
     return (
