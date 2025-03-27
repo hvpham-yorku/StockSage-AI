@@ -45,7 +45,13 @@ By leveraging virtual currency, historical market data, and AI-driven recommenda
    ```
 
 4. Set up environment variables:
-   Create a `.env` file in the backend directory with your Firebase configuration.
+   Copy the `.env.example` file to create a new `.env` file in the backend directory:
+
+   ```
+   copy .env.example .env
+   ```
+
+   Then open the `.env` file and replace the placeholder values with your actual Firebase configuration
 
 5. Run the FastAPI server:
    ```
@@ -154,3 +160,20 @@ We welcome contributions to StockSage-AI! Here's how you can contribute to our p
 5. **Code Review**: All pull requests require review from at least one other team member before merging.
 
 6. **Coding Standards**: (To be added later)
+
+
+## Firebase Setup
+
+1. **Get Firebase Credentials**
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Navigate to Project Settings > Service Accounts
+   - Click "Generate new private key"
+   - Save the JSON file to the `StockSage-AI/account/` folder with the name `firebase-credentials.json`
+   
+2. **Create .env File**
+   - Copy the `.env.example` file to `.env` in the backend directory
+   - Fill in your Firebase project details
+
+3. **Test Connection**
+   - Start the API server with `poetry run uvicorn stocksage_api.main:app --reload`
+   - Access the `/firebase/test` endpoint
