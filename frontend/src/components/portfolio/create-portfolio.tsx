@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { JSX, useState } from "react"
 import { Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,6 +14,10 @@ import { format } from "date-fns"
 
 import { api } from "@/lib/api";
 
+/**
+ * 
+ * @returns { JSX.Element } Create portfolio form
+ */
 export default function CreatePortfolio() {
   const [name, setName] = useState("")
   const [date, setDate] = useState<Date | undefined>(new Date())
