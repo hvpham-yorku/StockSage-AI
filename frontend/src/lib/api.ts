@@ -39,6 +39,13 @@ export interface UserProfile {
   };
 }
 
+export interface StockTerm {
+  term: string
+  definition: string
+  example: string
+}
+
+
 export interface UserProfileUpdate {
   name?: string;
   email?: string;
@@ -48,6 +55,14 @@ export interface UserProfileUpdate {
     default_view?: string;
   };
 }
+
+export interface TradingTip {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+}
+
 
 // Get the current user's ID token
 async function getCurrentUserToken(): Promise<string | null> {
@@ -252,13 +267,13 @@ export const api = {
   // Educational content endpoints
   education: {
     // Get all stock terms
-    getTerms: () => fetchFromAPI<any[]>('/api/education/terms'),
+    getTerms: () => fetchFromAPI<StockTerm[]>('/api/education/terms'),
     
     // Get a specific stock term
-    getTerm: (term: string) => fetchFromAPI<any>(`/api/education/terms/${term}`),
+    getTerm: (term: string) => fetchFromAPI<StockTerm>(`/api/education/terms/${term}`),
     
     // Get stock trading tips
-    getTips: () => fetchFromAPI<any[]>('/api/education/tips')
+    getTips: () => fetchFromAPI<TradingTip[]>('/api/education/tips')
   }
 };
 
