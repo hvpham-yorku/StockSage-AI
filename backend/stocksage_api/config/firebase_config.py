@@ -6,6 +6,7 @@ load_dotenv()
 
 # Firebase configuration
 firebase_config = {
+    # Standard Firebase config keys
     "apiKey": os.getenv("FIREBASE_API_KEY"),
     "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
     "databaseURL": os.getenv("FIREBASE_DATABASE_URL"),
@@ -13,5 +14,8 @@ firebase_config = {
     "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET"),
     "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID"),
     "appId": os.getenv("FIREBASE_APP_ID"),
-    "measurementId": os.getenv("FIREBASE_MEASUREMENT_ID")
+    "measurementId": os.getenv("FIREBASE_MEASUREMENT_ID"),
+    
+    # Additional keys for Firebase Admin SDK
+    "serviceAccount": os.getenv("GOOGLE_APPLICATION_CREDENTIALS", None)
 } 

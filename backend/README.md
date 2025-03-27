@@ -54,19 +54,14 @@ If you prefer not to use Poetry, you can use virtualenv:
 
 ### Environment Setup
 
-Create a `.env` file in the backend directory with the following Firebase configuration:
+Copy the `.env.example` file to create a new `.env` file in the backend directory:
 
   ```
-   # Firebase Configuration
-   FIREBASE_API_KEY=your_api_key
-   FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-   FIREBASE_DATABASE_URL=https://your_project_id-default-rtdb.firebaseio.com
-   FIREBASE_PROJECT_ID=your_project_id
-   FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
-   FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-   FIREBASE_APP_ID=your_app_id
-   FIREBASE_MEASUREMENT_ID=your_measurement_id
-   ```
+  copy .env.example .env
+  ```
+
+Then open the `.env` file and replace the placeholder values with your actual Firebase configuration:
+
 
 ### API Documentation
 
@@ -81,26 +76,34 @@ You can verify the server is running by visiting:
 ### Project Structure
 
 - `stocksage_api/` - Main package directory
-  - `main.py` - Entry point for the FastAPI application
-  - `config/` - Configuration files
-    - `firebase_config.py` - Firebase configuration
-  - `services/` - Service layer
-    - `firebase_service.py` - Firebase service for database operations
-  - `routes/` - API routes
-    - `firebase_test.py` - Firebase test endpoints
-  - `__init__.py` - Package initialization file
+  - `config/` - Configuration files for the application
+  - `services/` - Service layer for business logic
+  - `routes/` - API route definitions
 
 ### Firebase Integration
 
-The backend integrates with Firebase Realtime Database for data storage. The integration provides:
+The backend integrates with Firebase for data storage and authentication using two libraries:
 
-- Basic CRUD operations (Create, Read, Update, Delete)
-- Connection testing via the `/firebase/test` endpoint
-- Error handling for database operations
+1. **Firebase Admin SDK**
+   - Authentication and user management
+   - Administrative database operations
+   - Security rules management
+   - Server-side validation
+
+2. **Pyrebase4**
+   - Real-time database operations
+   - Real-time data streaming
+   - Client-side authentication
+   - Support for real-time updates
+
+This dual-library approach leverages the strengths of each library:
+- Firebase Admin SDK provides secure server-side authentication and admin capabilities
+- Pyrebase provides easier real-time database access and streaming
 
 To verify your Firebase connection is working:
 1. Visit http://localhost:8000/firebase/test
-2. Check your Firebase console to see the test data at the "test" node
+2. The test will verify both Firebase Admin SDK and Pyrebase connections
+3. Check your Firebase console to see the test data in the "test_admin" and "test_pyrebase" nodes
 
 ### Troubleshooting
 
@@ -116,7 +119,46 @@ If you encounter issues with pyrebase4 or other dependencies:
    pip install --upgrade setuptools
    ```
 
-3. If you still have issues with pyrebase4, try installing it directly:
-   ```
-   pip install pyrebase4==4.8.0
-   ```
+
+## Firebase Setup
+
+StockSage uses Firebase for backend storage. This application requires proper Firebase credentials to function.
+
+### Firebase Setup Steps:
+
+1. **Create a Firebase Project**
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Create a new project or use an existing one
+   - Enable Realtime Database in your project
+
+2. **Get Firebase Credentials**
+   - Go to Firebase Console > Project Settings > Service Accounts
+   - Click "Generate new private key"
+   - Save the JSON file to a secure location on your computer
+   - Note the full path to this file - you'll need it in the next step
+
+3. **Set Up Environment Variables**
+   - Copy `.env.example` to `.env` in the backend directory
+   - Set the `GOOGLE_APPLICATION_CREDENTIALS` variable to the full path of your credentials file:
+     ```
+     GOOGLE_APPLICATION_CREDENTIALS=C:\path\to\your-firebase-credentials.json
+     ```
+   - Fill in the required Firebase configuration:
+     ```
+     FIREBASE_DATABASE_URL=https://your-project-id-default-rtdb.firebaseio.com
+     FIREBASE_PROJECT_ID=your-project-id
+     ```
+   - These values can be found in the Firebase Console under Project Settings
+
+4. **Verify Setup**
+   - Run the setup check script:
+     ```
+     poetry run python -m scripts.check_firebase_setup
+     ```
+   - The script will verify your Firebase credentials and connection
+
+5. **Troubleshooting**
+   - Make sure the path in `GOOGLE_APPLICATION_CREDENTIALS` is correct and accessible
+   - On Windows, use either double backslashes or forward slashes in the path
+   - Ensure your Firebase Realtime Database is enabled in the Firebase Console
+   - Check that your service account has the correct permissions
