@@ -66,7 +66,7 @@ export function Header() {
                         placeholder="Search stocks..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="px-3 py-2 border rounded"
+                        className="px-3 border rounded"
                     />
                     <Button type="submit">Search</Button>
                 </form>
