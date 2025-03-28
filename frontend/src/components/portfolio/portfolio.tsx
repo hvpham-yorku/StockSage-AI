@@ -19,6 +19,13 @@ interface PortfolioProps {
   stocks: Stock[]
 }
 
+/**
+ * 
+ * @todo Remove props from StockPortfolio, an api call should be made to get
+ * cash balance and stocks.
+ * @todo Remove dummy Stock interface needed for overlay, purchase price
+ * doesn't exist in current stock interface
+ */
 export default function StockPortfolio({ cashBalance = 12500.75, stocks = [] }: PortfolioProps) {
   const [portfolio, setPortfolio] = useState<Stock[]>(stocks)
   const [loading, setLoading] = useState(true)
