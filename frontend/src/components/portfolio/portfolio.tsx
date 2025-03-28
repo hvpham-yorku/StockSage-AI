@@ -5,7 +5,6 @@ import { ArrowDown, ArrowUp, DollarSign, LineChart } from "lucide-react"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface Stock {
   symbol: string
@@ -116,77 +115,70 @@ export default function StockPortfolio({ cashBalance = 12500.75, stocks = [] }: 
         </Card>
       </div>
 
-      <Tabs defaultValue="stocks" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="stocks">Stocks</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-        </TabsList>
-        <TabsContent value="stocks" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Stock Holdings</CardTitle>
-              <CardDescription>View and manage your stock portfolio</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <div className="flex justify-center py-6">Loading stock data...</div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Symbol</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Shares</TableHead>
-                      <TableHead>Purchase Price</TableHead>
-                      <TableHead>Current Price</TableHead>
-                      <TableHead>Market Value</TableHead>
-                      <TableHead>Gain/Loss</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {portfolio.map((stock) => {
-                      const marketValue = stock.shares * stock.currentPrice
-                      const gainLoss = (stock.currentPrice - stock.purchasePrice) * stock.shares
-                      const gainLossPercent = ((stock.currentPrice - stock.purchasePrice) / stock.purchasePrice) * 100
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Portfolio Performance</CardTitle>
+            <CardDescription>Track your investment performance over time</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* Placeholder for the graph component */}
+            <div
+              id="portfolio-graph"
+              className="h-[400px] w-full border border-dashed border-gray-300 rounded-md flex items-center justify-center bg-muted/40"
+            >
+              <p className="text-muted-foreground">Portfolio Performance Graph</p>
+            </div>
+          </CardContent>
+        </Card>
 
-                      return (
-                        <TableRow key={stock.symbol}>
-                          <TableCell className="font-medium">{stock.symbol}</TableCell>
-                          <TableCell>{stock.name}</TableCell>
-                          <TableCell>{stock.shares}</TableCell>
-                          <TableCell>${stock.purchasePrice.toFixed(2)}</TableCell>
-                          <TableCell>${stock.currentPrice.toFixed(2)}</TableCell>
-                          <TableCell>${marketValue.toFixed(2)}</TableCell>
-                          <TableCell className={gainLoss >= 0 ? "text-green-500" : "text-red-500"}>
-                            ${gainLoss.toFixed(2)} ({gainLossPercent.toFixed(2)}%)
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="performance" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Portfolio Performance</CardTitle>
-              <CardDescription>Track your investment performance over time</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* Placeholder for the graph component */}
-              <div
-                id="portfolio-graph"
-                className="h-[400px] w-full border border-dashed border-gray-300 rounded-md flex items-center justify-center bg-muted/40"
-              >
-                <p className="text-muted-foreground">Portfolio Performance Graph</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Stock Holdings</CardTitle>
+            <CardDescription>View and manage your stock portfolio</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="flex justify-center py-6">Loading stock data...</div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Symbol</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Shares</TableHead>
+                    <TableHead>Purchase Price</TableHead>
+                    <TableHead>Current Price</TableHead>
+                    <TableHead>Market Value</TableHead>
+                    <TableHead>Gain/Loss</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {portfolio.map((stock) => {
+                    const marketValue = stock.shares * stock.currentPrice
+                    const gainLoss = (stock.currentPrice - stock.purchasePrice) * stock.shares
+                    const gainLossPercent = ((stock.currentPrice - stock.purchasePrice) / stock.purchasePrice) * 100
+
+                    return (
+                      <TableRow key={stock.symbol}>
+                        <TableCell className="font-medium">{stock.symbol}</TableCell>
+                        <TableCell>{stock.name}</TableCell>
+                        <TableCell>{stock.shares}</TableCell>
+                        <TableCell>${stock.purchasePrice.toFixed(2)}</TableCell>
+                        <TableCell>${stock.currentPrice.toFixed(2)}</TableCell>
+                        <TableCell>${marketValue.toFixed(2)}</TableCell>
+                        <TableCell className={gainLoss >= 0 ? "text-green-500" : "text-red-500"}>
+                          ${gainLoss.toFixed(2)} ({gainLossPercent.toFixed(2)}%)
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
