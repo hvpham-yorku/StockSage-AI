@@ -26,7 +26,7 @@ export default function Home() {
 
     const home = (
     <div>
-        <div className="container relative mx-auto px-4 py-24 flex h-screen items-center px-8">
+        <div className="container relative mx-auto px-4 py-24 flex h-screen items-center">
             <div className="max-w-3xl text-center lg:text-left">
                 <div className="flex items-center justify-center lg:justify-start mb-6">
                     <div className="flex items-center space-x-2 bg-primary rounded-full px-4 py-2">
@@ -39,7 +39,7 @@ export default function Home() {
                     <span className="block text-primary">AI-Powered Insights</span>
                 </h1>
 
-                <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground mx-0">
+                <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
                     StockSage-AI combines advanced artificial intelligence with real-time market data to help you make informed
                     investment decisions and maximize your returns.
                 </p>

@@ -565,7 +565,7 @@ async def get_company_info(
             "industry": info.get("industry", "Unknown"),
             "employees": info.get("fullTimeEmployees", 0),
             "headquarters": f"{info.get('city', 'Unknown')}, {info.get('state', '')}",
-            "founded": info.get("startDate", "Unknown"),
+            "founded": info.get("startDate", None),
             "ceo": info.get("companyOfficers", [{}])[0].get("name", "Unknown") if info.get("companyOfficers") else "Unknown",
             "website": info.get("website", "")
         }
