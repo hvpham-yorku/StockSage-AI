@@ -18,10 +18,17 @@ export default function PortfolioView() { //TODO Rename this function
 
   let userHasPortfolios = async (user: User | null) => {
     try {
-      let userPortfolios = await api.portfolios.getAll();
+      /**
+       * TODO UNCOMMENT
+      // let userPortfolios = await api.portfolios.getAll(); //TODO Not implemented yet
 
       //Check if user has portfolios
-      return userPortfolios.length != 0;
+      //return userPortfolios.length != 0;
+
+       *
+       * TODO UNCOMMENT
+       */
+      return true;
     } catch (e) {
       console.log(e);
       return false;
