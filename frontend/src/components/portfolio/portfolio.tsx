@@ -148,10 +148,10 @@ export default function StockPortfolio({ cashBalance = 12500.75, stocks = [] }: 
             <CardDescription>Track your investment performance over time</CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Placeholder for the graph component */}
+            {/* Graph component */}
             <div
               id="portfolio-graph"
-              className="h-[400px] w-full border border-dashed border-gray-300 rounded-md flex items-center justify-center bg-muted/40"
+              className="h-[400px] w-full border border-dashed border-gray-300 rounded-md flex items-center justify-center bg-muted/40 p-5"
             >
                 <SimpleGraph 
                     data = {sampleData}
