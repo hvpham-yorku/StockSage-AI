@@ -6,6 +6,8 @@ import { ArrowDown, ArrowUp, DollarSign, LineChart } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
+import SimpleGraph from "./perfomance_chart"
+
 interface Stock {
   symbol: string
   name: string
@@ -71,6 +73,23 @@ export default function StockPortfolio({ cashBalance = 12500.75, stocks = [] }: 
   const totalGainLoss = calculateTotalGainLoss()
   const totalPortfolioValue = cashBalance + totalValue
 
+
+  const sampleData = [
+    { date: "2023-10-01", value: 10000 },
+    { date: "2023-10-15", value: 10500 },
+    { date: "2023-11-01", value: 10300 },
+    { date: "2023-11-15", value: 11000 },
+    { date: "2023-12-01", value: 10800 },
+    { date: "2023-12-15", value: 11200 },
+    { date: "2024-01-01", value: 11500 },
+    { date: "2024-01-15", value: 11800 },
+    { date: "2024-02-01", value: 12100 },
+    { date: "2024-02-15", value: 12300 },
+    { date: "2024-03-01", value: 12000 },
+    { date: "2024-03-15", value: 12500 },
+]
+
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -129,12 +148,14 @@ export default function StockPortfolio({ cashBalance = 12500.75, stocks = [] }: 
             <CardDescription>Track your investment performance over time</CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Placeholder for the graph component */}
+            {/* Graph component */}
             <div
               id="portfolio-graph"
-              className="h-[400px] w-full border border-dashed border-gray-300 rounded-md flex items-center justify-center bg-muted/40"
+              className="h-[400px] w-full border border-dashed border-gray-300 rounded-md flex items-center justify-center bg-muted/40 p-5"
             >
-              <p className="text-muted-foreground">Portfolio Performance Graph</p>
+                <SimpleGraph 
+                    data = {sampleData}
+                />
             </div>
           </CardContent>
         </Card>
