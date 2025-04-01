@@ -234,7 +234,7 @@ export default function PortfolioDetailPage() {
 
             {/*target performance , strategy*/}
             <section className="border-t pt-4 space-y-4">
-                <h2 className="text-xl font-semibold">Portfolio Strategy & Target</h2>
+                <h2 className="text-xl font-semibold">Portfolio Strategy & Target & Risk_Tolerance </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
@@ -289,7 +289,7 @@ export default function PortfolioDetailPage() {
 
                 <div>
                     <Button onClick={handleUpdateDetails} disabled={isUpdating} className="w-full md:w-auto">
-                        {isUpdating ? "Updating..." : "Update Strategy & Target"}
+                        {isUpdating ? "Updating..." : "Update Your Choice"}
                     </Button>
                 </div>
             </section>
