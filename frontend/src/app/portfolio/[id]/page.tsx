@@ -38,6 +38,8 @@ export default function PortfolioDetailPage() {
     const [targetReturn, setTargetReturn] = useState<string>("")
     const [strategy, setStrategy] = useState<string>("")
     const [isUpdating, setIsUpdating] = useState(false)
+    const [riskTolerance, setRiskTolerance] = useState<string>("");
+
 
 
 
@@ -55,6 +57,7 @@ export default function PortfolioDetailPage() {
                 setStocks(stockList)
                 setTargetReturn(data.target_return?.toString() || "")
                 setStrategy(data.strategy || "")
+                setRiskTolerance(data.risk_tolerance || "");
             } catch (error) {
                 console.error("Failed to fetch portfolio detail:", error)
             } finally {
@@ -72,6 +75,7 @@ export default function PortfolioDetailPage() {
             await api.portfolios.update(id, {
                 target_return: parseFloat(targetReturn),
                 strategy,
+                risk_tolerance: riskTolerance,
             })
 
             const updated = await api.portfolios.getOne(id)
@@ -265,6 +269,22 @@ export default function PortfolioDetailPage() {
                             </SelectContent>
                         </Select>
                     </div>
+
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium text-muted-foreground" htmlFor="risk">
+                            Risk Tolerance
+                        </label>
+                        <Select value={riskTolerance} onValueChange={setRiskTolerance}>
+                            <SelectTrigger className="w-full" id="risk">
+                                <SelectValue placeholder="Select Risk Tolerance" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Low">Low</SelectItem>
+                                <SelectItem value="Moderate">Moderate</SelectItem>
+                                <SelectItem value="High">High</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
 
                 <div>
@@ -290,6 +310,8 @@ export default function PortfolioDetailPage() {
                                     : "N/A"}
                             </p>
                             <p>Strategy: {portfolio?.strategy || "N/A"}</p>
+                            <p>Risk Tolerance: {portfolio?.risk_tolerance || "N/A"}</p>
+
                         </div>
                     </section>
                     <section className="border-t pt-4">

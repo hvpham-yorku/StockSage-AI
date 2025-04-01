@@ -19,6 +19,7 @@ class PortfolioCreate(BaseModel):
     initial_balance: float
     target_return: Optional[float] = None
     strategy: Optional[str] = None
+    risk_tolerance: Optional[str] = None
 
 class Holding(BaseModel):
     symbol: str
@@ -32,6 +33,7 @@ class PortfolioResponse(PortfolioCreate):
 class PortfolioUpdate(BaseModel):
     target_return: Optional[float] = None
     strategy: Optional[str] = None
+    risk_tolerance: Optional[str] = None
 
 
 class BuySellRequest(BaseModel):
