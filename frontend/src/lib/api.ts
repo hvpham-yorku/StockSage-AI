@@ -65,11 +65,18 @@ export interface TradingTip {
 
 // portfolio interfaces
 // Portfolio types
+export interface Holding {
+  symbol: string;
+  quantity: number;
+  price: number;
+}
+
 export interface Portfolio {
   id: string;
   name: string;
   start_date: string;
   initial_balance: number;
+  holdings?: { [symbol: string]: Holding };
 }
 
 export interface Transaction {
@@ -81,8 +88,9 @@ export interface Transaction {
 }
 
 export interface PortfolioPerformance {
-  value: number;
-  return_pct: number;
+  portfolio_id: string;
+  current_value: number;
+  return_percentage: number;
   profit_loss: number;
 }
 
@@ -272,20 +280,24 @@ export const api = {
       fetchFromAPI<PortfolioComparison>(`/api/portfolios/compare?ids=${portfolioIds.join(',')}`),
     
     // Buy stock in a portfolio
-    buyStock: (portfolioId: string,
-               data: { symbol: string, quantity: number, price: number }) =>
-      fetchFromAPI<void>(`/api/portfolios/${portfolioId}/buy`, {
-        method: 'POST',
-        body: JSON.stringify(data)
-      }),
+    buyStock: (
+        portfolioId: string,
+        data: { symbol: string; quantity: number; date: string }
+    ) =>
+        fetchFromAPI<void>(`/api/portfolios/${portfolioId}/buy`, {
+          method: 'POST',
+          body: JSON.stringify(data),
+        }),
     
     // Sell stock from a portfolio
-    sellStock: (portfolioId: string,
-                data: { symbol: string, quantity: number, price: number }) =>
-      fetchFromAPI<void>(`/api/portfolios/${portfolioId}/sell`, {
-        method: 'POST',
-        body: JSON.stringify(data)
-      }),
+    sellStock: (
+        portfolioId: string,
+        data: { symbol: string; quantity: number; date: string }
+    ) =>
+        fetchFromAPI<void>(`/api/portfolios/${portfolioId}/sell`, {
+          method: 'POST',
+          body: JSON.stringify(data),
+        }),
     
     // Get transaction history for a portfolio
     getTransactions: (portfolioId: string) => 
