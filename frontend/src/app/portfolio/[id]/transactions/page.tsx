@@ -30,7 +30,7 @@ export default function PortfolioTransactionsPage() {
     if (transactions.length === 0) return <div className="p-4">No transactions found.</div>
 
     return (
-        <main className="p-6 max-w-3xl mx-auto space-y-6">
+        <div className="p-6 max-w-3xl space-y-6">
             <h1 className="text-2xl font-bold mb-4">Transaction History</h1>
             <ul className="space-y-4">
                 {transactions.map((tx, index) => (
@@ -52,6 +52,6 @@ export default function PortfolioTransactionsPage() {
                     </li>
                 ))}
             </ul>
-        </main>
+        </div>
     )
 }

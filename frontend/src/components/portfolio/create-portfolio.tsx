@@ -116,7 +116,7 @@ export default function CreatePortfolio() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        <Button type="submit" className="w-full mt-4" disabled={isSubmitting}>
                             {isSubmitting ? "Creating..." : "Create Portfolio"}
                         </Button>
                     </CardFooter>

@@ -181,7 +181,7 @@ export default function PortfolioDetailPage() {
     if (!portfolio) return <div className="p-4">Portfolio not found</div>
 
     return (
-        <main className="p-6 max-w-5xl mx-auto space-y-6">
+        <div className="p-6 max-w-7xl space-y-6 grow">
             <div className="flex justify-end">
                 <Button variant="outline" onClick={() => router.push("/portfolio")}>
                     ← Back to Portfolio List
@@ -328,6 +328,6 @@ export default function PortfolioDetailPage() {
                 </div>
                 {message && <p className="text-sm text-muted-foreground">{message}</p>}
             </section>
-        </main>
+        </div>
     )
 }

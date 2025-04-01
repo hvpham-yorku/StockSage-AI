@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { auth } from "@/firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { api } from "@/lib/api";
+import { setCookie } from "cookies-next";
 
 export function LoginForm() {
     const [email, setEmail] = useState("");
@@ -39,6 +40,12 @@ export function LoginForm() {
                 // Fetch the user profile
                 await api.auth.getProfile();
                 console.log("Profile fetched successfully");
+
+                if (auth.currentUser) {
+                    const idToken = await auth.currentUser.getIdToken(); // Get Firebase ID token
+                    setCookie("token", idToken, { path: "/" }); // Store token in a cookie
+                }
+            
                 
                 router.push("/dashboard");
             } catch (error) {
