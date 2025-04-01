@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 
 import PageLoader from '@/components/condtionalRender';
 import Link from "next/link";
+import api from "@/lib/api";
 
 export default function Home() {
     const router = useRouter();
@@ -65,8 +66,28 @@ export default function Home() {
 
 function RedirectToDashboard() {
     const router = useRouter();
+
     useEffect(() => {
-        router.push('/dashboard')
+        const redirect = async () => {
+            try {
+                const profile = await api.auth.getProfile();
+                const defaultView = profile.preferences?.default_view || "dashboard";
+
+                if (defaultView === "portfolio") {
+                    router.push("/portfolio");
+                } else {
+                    router.push("/dashboard");
+                }
+            } catch (e) {
+                console.error("Failed to get profile for redirect:", e);
+                router.push("/dashboard"); // fallback
+            }
+        };
+
+        redirect();
     }, [router]);
+
     return null;
 }
+
+
