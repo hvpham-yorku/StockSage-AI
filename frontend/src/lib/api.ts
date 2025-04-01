@@ -79,6 +79,7 @@ export interface Portfolio {
   holdings?: { [symbol: string]: Holding };
   target_return?: number;
   strategy?: string;
+  risk_tolerance?: string;
 }
 
 export interface PortfolioUpdate {
