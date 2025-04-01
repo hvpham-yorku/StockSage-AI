@@ -23,6 +23,7 @@ try:
     from .routes import auth  # Import the auth routes
     from .routes import public_stocks  # Import the public stock routes
     from .routes import education  # Import the education routes
+    from .routes import portfolio # Import the portfolio routes
     from .services.firebase_service import firebase_service
 except Exception as e:
     logger.error(f"Failed to initialize Firebase: {str(e)}")
@@ -153,14 +154,15 @@ def custom_openapi():
     
     # Apply security only to authenticated endpoints
     # This is a more precise approach - we'll explicitly set security for each path
+    # Only secure auth routes except registration
     for path in openapi_schema["paths"]:
-        # Only secure auth routes except registration
-        if "/api/auth/" in path and not path.endswith(("/register", "/register/")):
+        if path.startswith("/api/auth/") or path.startswith("/api/portfolios") or path == "/api/portfolios":
             for method in openapi_schema["paths"][path]:
                 if method.lower() in ["get", "post", "put", "delete", "patch"]:
-                    # Add security requirement to this operation
                     openapi_schema["paths"][path][method]["security"] = [{"bearerAuth": []}]
-    
+
+
+
     # Add API tags with descriptions
     openapi_schema["tags"] = [
         {
@@ -174,6 +176,10 @@ def custom_openapi():
         {
             "name": "education",
             "description": "Stock market educational content and glossary"
+        },
+        {
+            "name": "Portfolios",
+            "description": "Manage user portfolios and trades"
         }
     ]
     
@@ -219,7 +225,9 @@ async def custom_redoc_html():
 app.include_router(auth.router)  # Add the auth router
 app.include_router(public_stocks.router)  # Add the public stocks router
 app.include_router(education.router)  # Add the education router
+app.include_router(portfolio.router) # Add the portfolio router
 app.include_router(firebase_test.router)  # Add the firebase test router
+
 
 # Root endpoint with improved documentation links
 @app.get("/")
