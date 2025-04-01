@@ -48,11 +48,12 @@ async def create_portfolio(
         portfolio: PortfolioCreate,
         current_user: dict = Depends(get_current_user)
 ):
-    portfolio_id = str(uuid4())
     data = portfolio.model_dump()
-    data["id"] = portfolio_id
-    data["start_date"] = data["start_date"].isoformat()
-    return firebase_service.create_portfolio(current_user["uid"], data)
+    try:
+        created = firebase_service.create_portfolio(current_user["uid"], data)
+        return created
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("", response_model=List[PortfolioResponse])
 async def get_all_portfolios(current_user: dict = Depends(get_current_user)):
