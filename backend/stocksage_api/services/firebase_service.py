@@ -291,9 +291,21 @@ class FirebaseService:
 
         data["id"] = portfolio_id
 
+        # Default values for target_return & strategy
+        data.setdefault("target_return", None)
+        data.setdefault("strategy", None)
+        data.setdefault("risk_tolerance", None)
+
         self.set_data(f"holdings/{user_id}/{portfolio_id}", {})
         self.set_data(f"portfolios/{user_id}/{portfolio_id}", data)
         return data
+
+    def update_portfolio_strategy(self, user_id: str, portfolio_id: str, updates: Dict[str, Any]):
+        allowed_fields = ["target_return", "strategy", "risk_tolerance"]
+        filtered = {k: v for k, v in updates.items() if k in allowed_fields}
+        if filtered:
+            self.update_data(f"portfolios/{user_id}/{portfolio_id}", filtered)
+
 
     def get_transactions(self, user_id: str, portfolio_id: str) -> List[Dict[str, Any]]:
         txns = self.get_data(f"transactions/{user_id}/{portfolio_id}")
