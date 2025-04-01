@@ -187,6 +187,7 @@ export default function PortfolioDetailPage() {
                     ← Back to Portfolio List
                 </Button>
             </div>
+
             <section>
                 <h1 className="text-2xl font-bold">{portfolio.name}</h1>
                 <p className="text-muted-foreground text-sm">
@@ -327,6 +328,15 @@ export default function PortfolioDetailPage() {
                     <Button onClick={() => handleTrade("sell")} variant="destructive">Sell</Button>
                 </div>
                 {message && <p className="text-sm text-muted-foreground">{message}</p>}
+                <div className="pt-2">
+                    <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => router.push(`/portfolio/${id}/transactions`)}
+                    >
+                        See All Transactions
+                    </Button>
+                </div>
             </section>
         </main>
     )
