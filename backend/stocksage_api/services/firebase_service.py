@@ -262,13 +262,23 @@ class FirebaseService:
         return self.get_data(f"portfolios/{user_id}/{portfolio_id}")
 
     def create_portfolio(self, user_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
-        portfolio_id = data.get("id")
-        if not portfolio_id:
-            raise ValueError("Portfolio must have an ID")
+        name = data.get("name")
+        if not name:
+            raise ValueError("Portfolio must have a name")
+        portfolio_id = name.replace(" ", "_").lower()
+
+        existing = self.get_data(f"portfolios/{user_id}/{portfolio_id}")
+        if existing:
+            raise ValueError(f"A portfolio with the name '{name}' already exists.")
+
         if isinstance(data.get("start_date"), datetime):
             data["start_date"] = data["start_date"].isoformat()
+
+        data["id"] = portfolio_id
+
         self.set_data(f"portfolios/{user_id}/{portfolio_id}", data)
         return data
+
 
     def get_transactions(self, user_id: str, portfolio_id: str) -> List[Dict[str, Any]]:
         txns = self.get_data(f"transactions/{user_id}/{portfolio_id}")
