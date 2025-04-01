@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Depends, Query, Body
+from pydantic import BaseModel, Field
 from typing import List
 from uuid import uuid4
 from datetime import datetime
 from stocksage_api.routes.auth import get_current_user
 from stocksage_api.services.firebase_service import firebase_service
+from typing import Dict, Any, Optional, Callable, TypeVar, List
 
 router = APIRouter(
     prefix="/api/portfolios",
@@ -17,13 +18,20 @@ class PortfolioCreate(BaseModel):
     start_date: datetime
     initial_balance: float
 
-class PortfolioResponse(PortfolioCreate):
-    id: str
-
-class BuySellRequest(BaseModel):
+class Holding(BaseModel):
     symbol: str
     quantity: int
     price: float
+
+class PortfolioResponse(PortfolioCreate):
+    id: str
+    holdings: Optional[Dict[str, Holding]] = None
+
+class BuySellRequest(BaseModel):
+    symbol: str
+    quantity: int = Field(..., ge=1, description="Quantity must be at least 1")
+    price: float = Field(..., ge=0.01, description="Price must be positive")
+    date: str
 
 class Transaction(BaseModel):
     date: str
@@ -71,11 +79,19 @@ async def get_transactions(id: str, current_user: dict = Depends(get_current_use
     return firebase_service.get_transactions(current_user["uid"], id)
 
 @router.post("/{id}/buy")
-async def buy_stock(id: str, request: BuySellRequest, current_user: dict = Depends(get_current_user)):
+async def buy_stock(
+        id: str,
+        request: BuySellRequest = Body(...),
+        current_user: dict = Depends(get_current_user)
+):
     return firebase_service.buy_stock(current_user["uid"], id, request.model_dump())
 
 @router.post("/{id}/sell")
-async def sell_stock(id: str, request: BuySellRequest, current_user: dict = Depends(get_current_user)):
+async def sell_stock(
+        id: str,
+        request: BuySellRequest = Body(...),
+        current_user: dict = Depends(get_current_user)
+):
     return firebase_service.sell_stock(current_user["uid"], id, request.model_dump())
 
 @router.get("/{id}/performance", response_model=PortfolioPerformance)
