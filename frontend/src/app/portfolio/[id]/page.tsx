@@ -35,6 +35,10 @@ export default function PortfolioDetailPage() {
     const [recommendation, setRecommendation] = useState<StockRecommendation | null>(null)
     const router = useRouter()
 
+    const [targetReturn, setTargetReturn] = useState<string>("")
+    const [strategy, setStrategy] = useState<string>("")
+    const [isUpdating, setIsUpdating] = useState(false)
+
 
 
     useEffect(() => {
@@ -49,6 +53,8 @@ export default function PortfolioDetailPage() {
                 setPortfolio(data)
                 setPerformance(perf)
                 setStocks(stockList)
+                setTargetReturn(data.target_return?.toString() || "")
+                setStrategy(data.strategy || "")
             } catch (error) {
                 console.error("Failed to fetch portfolio detail:", error)
             } finally {
@@ -58,6 +64,24 @@ export default function PortfolioDetailPage() {
 
         fetchPortfolioData()
     }, [id, refreshToggle])
+
+    const handleUpdateDetails = async () => {
+        if (!id || typeof id !== "string") return
+        setIsUpdating(true)
+        try {
+            await api.portfolios.update(id, {
+                target_return: parseFloat(targetReturn),
+                strategy,
+            })
+
+            const updated = await api.portfolios.getOne(id)
+            setPortfolio(updated)
+        } catch (e) {
+            console.error("Failed to update portfolio details:", e)
+        } finally {
+            setIsUpdating(false)
+        }
+    }
 
     useEffect(() => {
         const fetchPrice = async () => {
@@ -188,6 +212,7 @@ export default function PortfolioDetailPage() {
                 </Button>
             </div>
 
+            {/*Portfolio basic info*/}
             <section>
                 <h1 className="text-2xl font-bold">{portfolio.name}</h1>
                 <p className="text-muted-foreground text-sm">
@@ -203,6 +228,53 @@ export default function PortfolioDetailPage() {
                 )}
             </section>
 
+            {/*target performance , strategy*/}
+            <section className="border-t pt-4 space-y-4">
+                <h2 className="text-xl font-semibold">Portfolio Strategy & Target</h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium text-muted-foreground" htmlFor="targetReturn">
+                            Target Return (%)
+                        </label>
+                        <Input
+                            id="targetReturn"
+                            placeholder="e.g. 10"
+                            type="number"
+                            min={0}
+                            step={5}
+                            value={targetReturn}
+                            onChange={(e) => setTargetReturn(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium text-muted-foreground" htmlFor="strategy">
+                            Strategy
+                        </label>
+                        <Select value={strategy} onValueChange={setStrategy}>
+                            <SelectTrigger className="w-full" id="strategy">
+                                <SelectValue placeholder="Select Strategy" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Growth">Growth</SelectItem>
+                                <SelectItem value="Income">Income</SelectItem>
+                                <SelectItem value="Balanced">Balanced</SelectItem>
+                                <SelectItem value="Aggressive">Aggressive</SelectItem>
+                                <SelectItem value="Conservative">Conservative</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+
+                <div>
+                    <Button onClick={handleUpdateDetails} disabled={isUpdating} className="w-full md:w-auto">
+                        {isUpdating ? "Updating..." : "Update Strategy & Target"}
+                    </Button>
+                </div>
+            </section>
+
+
             {performance && (
                 <>
                     <section className="border-t pt-4">
@@ -211,6 +283,13 @@ export default function PortfolioDetailPage() {
                             <p>Current Value: ${performance.current_value.toLocaleString()}</p>
                             <p>Return: {performance.return_percentage.toFixed(2)}%</p>
                             <p>Profit/Loss: ${performance.profit_loss.toLocaleString()}</p>
+                            <p>
+                                Target Return:{" "}
+                                {typeof portfolio?.target_return === "number"
+                                    ? `${portfolio.target_return.toFixed(2)}%`
+                                    : "N/A"}
+                            </p>
+                            <p>Strategy: {portfolio?.strategy || "N/A"}</p>
                         </div>
                     </section>
                     <section className="border-t pt-4">
