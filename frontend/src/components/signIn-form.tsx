@@ -1,20 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import {useState} from "react";
+import {useRouter} from "next/navigation";
+import {toast} from "sonner";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {Checkbox} from "@/components/ui/checkbox";
+import {Separator} from "@/components/ui/separator";
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 
-import { auth } from "@/firebase/config";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { api } from "@/lib/api";
+import {auth} from "@/firebase/config";
+import {signInWithEmailAndPassword} from "firebase/auth";
+import {api} from "@/lib/api";
 
 export function LoginForm() {
     const [email, setEmail] = useState("");
@@ -27,29 +27,20 @@ export function LoginForm() {
         e.preventDefault();
         setIsLoading(true);
 
-        try { 
+        try {
             console.log("Attempting to sign in with Firebase...");
-            // First authenticate with Firebase
             await signInWithEmailAndPassword(auth, email, password);
             console.log("Firebase sign-in successful");
-            
-            // Wait for token to be available
-            try {             
-                console.log("Fetching user profile...");
-                // Fetch the user profile
-                await api.auth.getProfile();
-                console.log("Profile fetched successfully");
-                
-                router.push("/dashboard");
-            } catch (error) {
-                console.error("Backend verification error:", error);
-                toast.error("Failed to authenticate with backend. Please try again.");
-            } finally {
-                setIsLoading(false);
-            }
-            
+
+            console.log("Fetching user profile...");
+            const profile = await api.auth.getProfile();
+            console.log("Profile fetched successfully");
+
+            const defaultView = profile.preferences?.default_view || "dashboard";
+            router.push(defaultView === "portfolio" ? "/portfolio" : "/dashboard");
+
         } catch (error) {
-            console.error("Firebase auth error:", error);
+            console.error("Login error:", error);
             toast.error("Failed to sign in. Please check your credentials.");
         } finally {
             setIsLoading(false);
@@ -67,12 +58,14 @@ export function LoginForm() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={isLoading} required />
+                            <Input id="email" type="email" placeholder="name@example.com" value={email}
+                                   onChange={(e) => setEmail(e.target.value)} disabled={isLoading} required/>
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
-                            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} disabled={isLoading} required />
+                            <Input id="password" type="password" value={password}
+                                   onChange={(e) => setPassword(e.target.value)} disabled={isLoading} required/>
 
                             <div className="text-right">
                                 <Link href="/auth/reset" className="text-sm text-blue-600 hover:underline">
@@ -86,14 +79,11 @@ export function LoginForm() {
                         </Button>
 
                         {/* Sign Up Button */}
-                        <Button
-                            variant="outline"
-                            className="w-full mt-2"
-                            onClick={() => router.push("/signup")}
-                            disabled={isLoading}
-                        >
-                            Sign Up
-                        </Button>
+                        <Link href="/signup" className="block w-full">
+                            <Button variant="outline" className="w-full mt-2" disabled={isLoading}>
+                                Sign Up
+                            </Button>
+                        </Link>
                     </form>
                 </CardContent>
             </Card>

@@ -77,7 +77,16 @@ export interface Portfolio {
   start_date: string;
   initial_balance: number;
   holdings?: { [symbol: string]: Holding };
+  target_return?: number;
+  strategy?: string;
+  risk_tolerance?: string;
 }
+
+export interface PortfolioUpdate {
+  target_return?: number;
+  strategy?: string;
+}
+
 
 export interface Transaction {
   type: "buy" | "sell";
@@ -311,6 +320,13 @@ export const api = {
     delete: (portfolioId: string) =>
         fetchFromAPI<void>(`/api/portfolios/${portfolioId}`, {
           method: "DELETE",
+        }),
+
+    // update portfolio
+    update: (portfolioId: string, data: Partial<Portfolio>) =>
+        fetchFromAPI<Portfolio>(`/api/portfolios/${portfolioId}`, {
+          method: "PATCH",
+          body: JSON.stringify(data),
         }),
 
   },
