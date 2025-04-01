@@ -293,7 +293,14 @@ export const api = {
     
     // Get performance data for a portfolio
     getPerformance: (portfolioId: string) => 
-      fetchFromAPI<PortfolioPerformance>(`/api/portfolios/${portfolioId}/performance`)
+      fetchFromAPI<PortfolioPerformance>(`/api/portfolios/${portfolioId}/performance`),
+
+    // delete portfolio
+    delete: (portfolioId: string) =>
+        fetchFromAPI<void>(`/api/portfolios/${portfolioId}`, {
+          method: "DELETE",
+        }),
+
   },
   
   // Educational content endpoints

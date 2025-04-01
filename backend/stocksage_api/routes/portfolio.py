@@ -86,3 +86,14 @@ async def get_performance(id: str, current_user: dict = Depends(get_current_user
 async def compare_portfolios(ids: str = Query(...), current_user: dict = Depends(get_current_user)):
     portfolio_ids = ids.split(",")
     return firebase_service.compare_portfolios(current_user["uid"], portfolio_ids)
+
+@router.delete("/{portfolio_id}")
+async def delete_portfolio(
+        portfolio_id: str,
+        current_user: dict = Depends(get_current_user)
+):
+    try:
+        firebase_service.delete_portfolio(current_user["uid"], portfolio_id)
+        return {"message": "Portfolio deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
