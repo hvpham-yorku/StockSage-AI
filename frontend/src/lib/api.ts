@@ -63,6 +63,36 @@ export interface TradingTip {
   category: string;
 }
 
+// portfolio interfaces
+// Portfolio types
+export interface Portfolio {
+  id: string;
+  name: string;
+  start_date: string;
+  initial_balance: number;
+}
+
+export interface Transaction {
+  type: "buy" | "sell";
+  symbol: string;
+  quantity: number;
+  price: number;
+  date: string;
+}
+
+export interface PortfolioPerformance {
+  value: number;
+  return_pct: number;
+  profit_loss: number;
+}
+
+export interface PortfolioComparison {
+  id: string;
+  name: string;
+  return_pct: number;
+}
+
+
 
 // Get the current user's ID token
 async function getCurrentUserToken(): Promise<string | null> {
@@ -226,42 +256,51 @@ export const api = {
   portfolios: {
     // Create a new portfolio
     create: (data: { name: string, start_date: string, initial_balance: number }) => 
-      fetchFromAPI<any>('/api/portfolios', {
+      fetchFromAPI<Portfolio>('/api/portfolios', {
         method: 'POST',
         body: JSON.stringify(data)
       }),
     
     // Get all portfolios for the current user
-    getAll: () => fetchFromAPI<any[]>('/api/portfolios'),
+    getAll: () => fetchFromAPI<Portfolio[]>('/api/portfolios'),
     
     // Get a specific portfolio
-    getOne: (portfolioId: string) => fetchFromAPI<any>(`/api/portfolios/${portfolioId}`),
+    getOne: (portfolioId: string) => fetchFromAPI<Portfolio>(`/api/portfolios/${portfolioId}`),
     
     // Compare portfolios
     compare: (portfolioIds: string[]) => 
-      fetchFromAPI<any>(`/api/portfolios/compare?ids=${portfolioIds.join(',')}`),
+      fetchFromAPI<PortfolioComparison>(`/api/portfolios/compare?ids=${portfolioIds.join(',')}`),
     
     // Buy stock in a portfolio
-    buyStock: (portfolioId: string, data: { symbol: string, quantity: number, price: number }) => 
-      fetchFromAPI<any>(`/api/portfolios/${portfolioId}/buy`, {
+    buyStock: (portfolioId: string,
+               data: { symbol: string, quantity: number, price: number }) =>
+      fetchFromAPI<void>(`/api/portfolios/${portfolioId}/buy`, {
         method: 'POST',
         body: JSON.stringify(data)
       }),
     
     // Sell stock from a portfolio
-    sellStock: (portfolioId: string, data: { symbol: string, quantity: number, price: number }) => 
-      fetchFromAPI<any>(`/api/portfolios/${portfolioId}/sell`, {
+    sellStock: (portfolioId: string,
+                data: { symbol: string, quantity: number, price: number }) =>
+      fetchFromAPI<void>(`/api/portfolios/${portfolioId}/sell`, {
         method: 'POST',
         body: JSON.stringify(data)
       }),
     
     // Get transaction history for a portfolio
     getTransactions: (portfolioId: string) => 
-      fetchFromAPI<any[]>(`/api/portfolios/${portfolioId}/transactions`),
+      fetchFromAPI<Transaction[]>(`/api/portfolios/${portfolioId}/transactions`),
     
     // Get performance data for a portfolio
     getPerformance: (portfolioId: string) => 
-      fetchFromAPI<any>(`/api/portfolios/${portfolioId}/performance`)
+      fetchFromAPI<PortfolioPerformance>(`/api/portfolios/${portfolioId}/performance`),
+
+    // delete portfolio
+    delete: (portfolioId: string) =>
+        fetchFromAPI<void>(`/api/portfolios/${portfolioId}`, {
+          method: "DELETE",
+        }),
+
   },
   
   // Educational content endpoints
