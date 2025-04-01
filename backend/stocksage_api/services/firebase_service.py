@@ -2,8 +2,9 @@ import firebase_admin
 from firebase_admin import credentials, db, auth
 import logging
 import sys
-from typing import Dict, Any, Optional, Callable, TypeVar
+from typing import Dict, Any, Optional, Callable, TypeVar, List
 from ..config.firebase_config import firebase_config
+from datetime import datetime
 
 # Import pyrebase for real-time data operations
 try:
@@ -248,6 +249,131 @@ class FirebaseService:
         except Exception as e:
             logger.error(f"Error deleting user {user_id}: {str(e)}")
             raise e
+
+
+    # --- Portfolio Methods ---
+    def get_portfolios(self, user_id: str) -> List[Dict[str, Any]]:
+        portfolios = self.get_data(f"portfolios/{user_id}")
+        if portfolios:
+            return [{"id": pid, **pdata} for pid, pdata in portfolios.items()]
+        return []
+
+    def get_portfolio(self, user_id: str, portfolio_id: str) -> Optional[Dict[str, Any]]:
+        return self.get_data(f"portfolios/{user_id}/{portfolio_id}")
+
+    def create_portfolio(self, user_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        portfolio_id = data.get("id")
+        if not portfolio_id:
+            raise ValueError("Portfolio must have an ID")
+        if isinstance(data.get("start_date"), datetime):
+            data["start_date"] = data["start_date"].isoformat()
+        self.set_data(f"portfolios/{user_id}/{portfolio_id}", data)
+        return data
+
+    def get_transactions(self, user_id: str, portfolio_id: str) -> List[Dict[str, Any]]:
+        txns = self.get_data(f"transactions/{user_id}/{portfolio_id}")
+        if txns:
+            return list(txns.values())
+        return []
+
+    def add_transaction(self, user_id: str, portfolio_id: str, txn: Dict[str, Any]) -> str:
+        res = self.push_data(f"transactions/{user_id}/{portfolio_id}", txn)
+        return res["name"]  # Firebase returns generated key as 'name'
+
+    def update_portfolio_balance(self, user_id: str, portfolio_id: str, balance: float):
+        self.update_data(f"portfolios/{user_id}/{portfolio_id}", {"initial_balance": balance})
+
+    def delete_portfolio(self, user_id: str, portfolio_id: str):
+        self.delete_data(f"portfolios/{user_id}/{portfolio_id}")
+        self.delete_data(f"transactions/{user_id}/{portfolio_id}")
+
+    def buy_stock(self, user_id: str, portfolio_id: str, request: Dict[str, Any]) -> Dict[str, Any]:
+        # get portfolio
+        portfolio = self.get_portfolio(user_id, portfolio_id)
+        if not portfolio:
+            raise ValueError("Portfolio not found")
+
+        # check balance
+        current_balance = portfolio.get("initial_balance", 0)
+        total_cost = request["price"] * request["quantity"]
+
+        if total_cost > current_balance:
+            raise ValueError("Insufficient balance to complete purchase")
+
+        # update balance
+        new_balance = current_balance - total_cost
+        self.update_portfolio_balance(user_id, portfolio_id, new_balance)
+
+        # add transaction
+        transaction = {
+            "date": datetime.utcnow().isoformat(),
+            "symbol": request["symbol"],
+            "type": "buy",
+            "quantity": request["quantity"],
+            "price": request["price"]
+        }
+        self.add_transaction(user_id, portfolio_id, transaction)
+
+        return {"message": "Stock purchased successfully", "new_balance": new_balance}
+
+    def sell_stock(self, user_id: str, portfolio_id: str, request: Dict[str, Any]) -> Dict[str, Any]:
+        # get portfolio
+        portfolio = self.get_portfolio(user_id, portfolio_id)
+        if not portfolio:
+            raise ValueError("Portfolio not found")
+
+        # get current balance
+        current_balance = portfolio.get("initial_balance", 0)
+
+        # calculate revenue
+        revenue = request["price"] * request["quantity"]
+        new_balance = current_balance + revenue
+
+        # update balance
+        self.update_portfolio_balance(user_id, portfolio_id, new_balance)
+
+        # add transaction
+        transaction = {
+            "date": datetime.utcnow().isoformat(),
+            "symbol": request["symbol"],
+            "type": "sell",
+            "quantity": request["quantity"],
+            "price": request["price"]
+        }
+        self.add_transaction(user_id, portfolio_id, transaction)
+
+        return {"message": "Stock sold successfully", "new_balance": new_balance}
+
+
+    def get_performance(self, user_id: str, portfolio_id: str) -> Dict[str, Any]:
+        # simple calculation for "test"
+        portfolio = self.get_portfolio(user_id, portfolio_id)
+        if not portfolio:
+            raise ValueError("Portfolio not found")
+
+        initial_balance = portfolio.get("initial_balance", 0)
+        transactions = self.get_transactions(user_id, portfolio_id)
+
+        profit_loss = 0.0
+
+        for txn in transactions:
+            if txn["type"] == "buy":
+                profit_loss -= txn["price"] * txn["quantity"]
+            elif txn["type"] == "sell":
+                profit_loss += txn["price"] * txn["quantity"]
+
+        current_value = initial_balance + profit_loss
+        return_percentage = (profit_loss / initial_balance * 100) if initial_balance else 0.0
+
+        return {
+            "portfolio_id": portfolio_id,
+            "return_percentage": round(return_percentage, 2),
+            "profit_loss": round(profit_loss, 2),
+            "current_value": round(current_value, 2)
+        }
+
+
+
 
 # Create a singleton instance
 firebase_service = FirebaseService()
