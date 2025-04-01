@@ -1,13 +1,15 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { api, Transaction } from "@/lib/api"
+import {Button} from "@/components/ui/button";
 
 export default function PortfolioTransactionsPage() {
     const { id } = useParams()
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [loading, setLoading] = useState(true)
+    const router = useRouter()
 
     useEffect(() => {
         const fetchTransactions = async () => {
@@ -31,6 +33,13 @@ export default function PortfolioTransactionsPage() {
 
     return (
         <main className="p-6 max-w-3xl mx-auto space-y-6">
+
+            <div className="flex justify-end">
+                <Button variant="outline" onClick={() => router.push(`/portfolio/${id}`)}>
+                    ← Back to Portfolio {id}
+                </Button>
+            </div>
+
             <h1 className="text-2xl font-bold mb-4">Transaction History</h1>
             <ul className="space-y-4">
                 {transactions.map((tx, index) => (

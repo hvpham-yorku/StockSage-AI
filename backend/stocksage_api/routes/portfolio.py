@@ -17,6 +17,8 @@ class PortfolioCreate(BaseModel):
     name: str
     start_date: datetime
     initial_balance: float
+    target_return: Optional[float] = None
+    strategy: Optional[str] = None
 
 class Holding(BaseModel):
     symbol: str
@@ -26,6 +28,11 @@ class Holding(BaseModel):
 class PortfolioResponse(PortfolioCreate):
     id: str
     holdings: Optional[Dict[str, Holding]] = None
+
+class PortfolioUpdate(BaseModel):
+    target_return: Optional[float] = None
+    strategy: Optional[str] = None
+
 
 class BuySellRequest(BaseModel):
     symbol: str
@@ -113,3 +120,17 @@ async def delete_portfolio(
         return {"message": "Portfolio deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.patch("/{portfolio_id}", response_model=PortfolioResponse)
+async def update_portfolio(
+        portfolio_id: str,
+        update: PortfolioUpdate,
+        current_user: dict = Depends(get_current_user)
+):
+    try:
+        firebase_service.update_portfolio_strategy(current_user["uid"], portfolio_id, update.model_dump(exclude_unset=True))
+        return firebase_service.get_portfolio(current_user["uid"], portfolio_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
