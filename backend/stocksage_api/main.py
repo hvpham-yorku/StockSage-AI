@@ -5,6 +5,7 @@ from fastapi.openapi.utils import get_openapi
 from datetime import datetime
 import sys
 import logging
+from contextlib import asynccontextmanager
 
 # Configure logging
 logging.basicConfig(
@@ -17,13 +18,28 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Import background tasks module for cleanup
+from .services import background_tasks
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: place startup code here if needed
+    logger.info("Starting StockSage API server with lifespan context")
+    
+    yield  # This line separates startup from shutdown code
+    
+    # Shutdown: clean up resources
+    logger.info("Application shutting down. Cleaning up background tasks...")
+    background_tasks.shutdown()
+    logger.info("Cleanup complete")
+
 # Try to import Firebase - if it fails, exit with error
 try:
     from .routes import firebase_test
     from .routes import auth  # Import the auth routes
     from .routes import public_stocks  # Import the public stock routes
     from .routes import education  # Import the education routes
-    from .routes import portfolio # Import the portfolio routes
+    from .routes.portfolios import router as portfolios_router  # Import the new portfolio routes structure
     from .services.firebase_service import firebase_service
 except Exception as e:
     logger.error(f"Failed to initialize Firebase: {str(e)}")
@@ -54,23 +70,26 @@ company information, and AI-powered stock recommendations for educational purpos
 - **Company Information**: Access detailed profiles of publicly traded companies
 - **AI Recommendations**: Get buy, hold, or sell recommendations with confidence scores
 - **User Authentication**: Secure Firebase-based authentication for user accounts
+- **Portfolio Simulation**: Create and manage virtual trading portfolios with historical simulation
 
 ## API Sections
 
 - **Stocks & Market Data**: Endpoints for accessing stock information
 - **Authentication**: User registration, profile management, and token verification
 - **Educational Content**: Stock terms glossary and trading tips
+- **Portfolios**: Create and manage virtual portfolios with time simulation
 
 ## Authentication
 
 Public endpoints (Stocks and Education) require no authentication.
-Protected endpoints under /api/auth/ (except /register) require a valid Firebase ID token.
+Protected endpoints under /api/auth/ (except /register) and /api/portfolios/ require a valid Firebase ID token.
 Use the Authorize button in the top-right corner with your Firebase token to access protected endpoints.
     """,
     version="0.1.0",
     docs_url=None,  # We'll customize the docs endpoint
     redoc_url=None,  # We'll customize the redoc endpoint
     openapi_url="/api/openapi.json",
+    lifespan=lifespan  # Use the lifespan context manager for startup/shutdown
 )
 
 # Configure CORS
@@ -178,7 +197,7 @@ def custom_openapi():
             "description": "Stock market educational content and glossary"
         },
         {
-            "name": "Portfolios",
+            "name": "portfolios",
             "description": "Manage user portfolios and trades"
         }
     ]
@@ -225,7 +244,7 @@ async def custom_redoc_html():
 app.include_router(auth.router)  # Add the auth router
 app.include_router(public_stocks.router)  # Add the public stocks router
 app.include_router(education.router)  # Add the education router
-app.include_router(portfolio.router) # Add the portfolio router
+app.include_router(portfolios_router)  # Add the portfolios router with new structure
 app.include_router(firebase_test.router)  # Add the firebase test router
 
 
@@ -244,7 +263,8 @@ async def root():
             "stocks": "/api/stocks",
             "stock_search": "/api/stocks/search?query={query}",
             "auth": "/api/auth",
-            "education": "/api/education"
+            "education": "/api/education",
+            "portfolios": "/api/portfolios"
         }
     }
 
