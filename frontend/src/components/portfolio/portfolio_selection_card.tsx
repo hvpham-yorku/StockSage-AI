@@ -3,16 +3,18 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import PortfolioSelection from "./portfolio_selection"
-import { api, Portfolio } from "@/lib/api"
+import { api } from "@/lib/api"
 
-interface PortfolioUI extends Portfolio {
-  description: string
-  totalValue: number
-  cashBalance: number
-  stocksCount: number
+interface PortfolioUI {
+  id: string;
+  name: string;
+  description: string;
+  totalValue: number;
+  cashBalance: number;
+  stocksCount: number;
   performance: {
-    percentage: number
-    isPositive: boolean
+    percentage: number;
+    isPositive: boolean;
   }
 }
 
@@ -29,25 +31,27 @@ export default function PortfolioContainer() {
             try {
               const performance = await api.portfolios.getPerformance(portfolio.id)
               return {
-                ...portfolio,
+                id: portfolio.id,
+                name: portfolio.name,
+                description: `Started ${new Date(portfolio.start_date).toLocaleDateString()}`,
                 performance: {
-                  percentage: performance.return_percentage,
-                  isPositive: performance.return_percentage >= 0,
+                  percentage: performance.performance,
+                  isPositive: performance.performance >= 0,
                 },
-                totalValue: performance.current_value,
-                cashBalance: portfolio.initial_balance,
-                stocksCount: Object.keys(portfolio.holdings || {}).length,
-                description: "",
-              }
+                totalValue: performance.current_balance,
+                cashBalance: portfolio.current_balance || portfolio.initial_balance,
+                stocksCount: performance.performance_history?.length || 0,
+              } as PortfolioUI
             } catch {
               return {
-                ...portfolio,
+                id: portfolio.id,
+                name: portfolio.name,
+                description: `Started ${new Date(portfolio.start_date).toLocaleDateString()}`,
                 performance: { percentage: 0, isPositive: true },
-                totalValue: portfolio.initial_balance,
-                cashBalance: portfolio.initial_balance,
+                totalValue: portfolio.current_balance || portfolio.initial_balance,
+                cashBalance: portfolio.current_balance || portfolio.initial_balance,
                 stocksCount: 0,
-                description: "",
-              }
+              } as PortfolioUI
             }
           }),
       )

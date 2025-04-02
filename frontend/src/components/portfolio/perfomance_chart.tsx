@@ -2,16 +2,12 @@
 
 import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { useState } from "react"
+import { PerformancePoint } from "@/lib/api"
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-interface DataPoint {
-  date: string
-  value: number
-}
-
 interface SimpleGraphProps {
-  data: DataPoint[]
+  data: PerformancePoint[]
   valuePrefix?: string
 }
 

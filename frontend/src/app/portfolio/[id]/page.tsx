@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
-import { api, Portfolio, PortfolioPerformance, StockRecommendation } from "@/lib/api"
+import { api, Portfolio, PortfolioPerformance, StockRecommendation, PerformancePoint } from "@/lib/api"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
@@ -30,8 +30,7 @@ export default function PortfolioDetailPage() {
     const [stocks, setStocks] = useState<{ symbol: string; name: string; price: number }[]>([])
     const [message, setMessage] = useState("")
     const [refreshToggle, setRefreshToggle] = useState(false)
-    const [currentBalance, setCurrentBalance] = useState<number | null>(null)
-    const [selectedStockHistory, setSelectedStockHistory] = useState<DataPoint[]>([])
+    const [selectedStockHistory, setSelectedStockHistory] = useState<PerformancePoint[]>([])
     const [recommendation, setRecommendation] = useState<StockRecommendation | null>(null)
     const router = useRouter()
 
@@ -39,9 +38,6 @@ export default function PortfolioDetailPage() {
     const [strategy, setStrategy] = useState<string>("")
     const [isUpdating, setIsUpdating] = useState(false)
     const [riskTolerance, setRiskTolerance] = useState<string>("");
-
-
-
 
     useEffect(() => {
         const fetchPortfolioData = async () => {
@@ -105,41 +101,6 @@ export default function PortfolioDetailPage() {
 
         fetchPrice()
     }, [symbol, date])
-
-    useEffect(() => {
-        const calculateCurrentBalance = async () => {
-            if (!portfolio || !id || typeof id !== "string") return
-
-            try {
-                const transactions = await api.portfolios.getTransactions(id)
-                let balance = portfolio.initial_balance
-
-                for (const txn of transactions) {
-                    const amount = txn.price * txn.quantity
-                    if (txn.type === "buy") balance -= amount
-                    else if (txn.type === "sell") balance += amount
-                }
-
-                if (portfolio.holdings) {
-                    const symbols = Object.keys(portfolio.holdings)
-                    const prices = await Promise.all(symbols.map(symbol => api.stocks.getOne(symbol)))
-
-                    prices.forEach(stock => {
-                        const holding = portfolio.holdings![stock.symbol]
-                        if (holding) {
-                            balance += stock.price * holding.quantity
-                        }
-                    })
-                }
-
-                setCurrentBalance(balance)
-            } catch (e) {
-                console.error("Failed to calculate current balance:", e)
-            }
-        }
-
-        calculateCurrentBalance()
-    }, [portfolio, id, refreshToggle])
 
     useEffect(() => {
         const fetchPriceHistory = async () => {
@@ -225,11 +186,12 @@ export default function PortfolioDetailPage() {
                 <p className="text-sm">
                     Initial Balance: ${portfolio.initial_balance.toLocaleString()}
                 </p>
-                {currentBalance !== null && (
-                    <p className="text-sm font-semibold text-green-700">
-                        Current Balance: ${currentBalance.toLocaleString()}
-                    </p>
-                )}
+                <p className="text-sm font-semibold text-green-700">
+                    Current Balance: ${portfolio.current_balance.toLocaleString()}
+                </p>
+                <p className="text-sm">
+                    Cash Balance: ${portfolio.cash_balance.toLocaleString()}
+                </p>
             </section>
 
             {/*target performance , strategy*/}
@@ -300,9 +262,9 @@ export default function PortfolioDetailPage() {
                     <section className="border-t pt-4">
                         <h2 className="text-xl font-semibold mb-2">Performance</h2>
                         <div className="mb-4 space-y-1">
-                            <p>Current Value: ${performance.current_value.toLocaleString()}</p>
-                            <p>Return: {performance.return_percentage.toFixed(2)}%</p>
-                            <p>Profit/Loss: ${performance.profit_loss.toLocaleString()}</p>
+                            <p>Current Value: ${performance.current_balance.toLocaleString()}</p>
+                            <p>Overall Performance: {performance.performance.toFixed(2)}%</p>
+                            <p>Profit/Loss: ${(performance.current_balance - performance.initial_balance).toLocaleString()}</p>
                             <p>
                                 Target Return:{" "}
                                 {typeof portfolio?.target_return === "number"
@@ -311,24 +273,37 @@ export default function PortfolioDetailPage() {
                             </p>
                             <p>Strategy: {portfolio?.strategy || "N/A"}</p>
                             <p>Risk Tolerance: {portfolio?.risk_tolerance || "N/A"}</p>
-
+                            {performance.metrics && (
+                                <div className="mt-3 border-t pt-2">
+                                    <h3 className="text-md font-semibold mb-1">Advanced Metrics</h3>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {Object.entries(performance.metrics).map(([key, value]) => (
+                                            <p key={key} className="text-sm">
+                                                <span className="font-medium">{key.replace(/_/g, ' ')}:</span> {value.toFixed(4)}
+                                            </p>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </section>
                     <section className="border-t pt-4">
-
                         <div className="flex-1">
                             <h3 className="text-lg font-semibold mb-2">Performance Graph</h3>
-
-                            <SimpleGraph // TODO: update -- this is mock data
-
-                                data={[
-                                    {date: "2024-12-31", value: 10000},
-                                    {date: "2025-01-10", value: 5000},
-                                    {date: "2025-02-01", value: 10300},
-                                    {date: "2025-02-15", value: 11000},
-                                    {date: "2025-03-02", value: 21000},
-                                    {date: "2025-03-30", value: 30000},
-                                ]}/>
+                            {performance.performance_history && performance.performance_history.length > 0 ? (
+                                <SimpleGraph data={performance.performance_history} />
+                            ) : (
+                                <SimpleGraph // Fallback to mock data if no history available
+                                    data={[
+                                        {date: "2024-12-31", value: 10000},
+                                        {date: "2025-01-10", value: 5000},
+                                        {date: "2025-02-01", value: 10300},
+                                        {date: "2025-02-15", value: 11000},
+                                        {date: "2025-03-02", value: 21000},
+                                        {date: "2025-03-30", value: 30000},
+                                    ]}
+                                />
+                            )}
                         </div>
                     </section>
                 </>
@@ -337,16 +312,19 @@ export default function PortfolioDetailPage() {
             {portfolio.holdings && (
                 <section className="border-t pt-4">
                     <h2 className="text-xl font-semibold mb-2">Holdings</h2>
-                    {Object.keys(portfolio.holdings).length === 0 ? (
+                    {portfolio.holdings.length === 0 ? (
                         <p className="text-muted-foreground">No holdings yet.</p>
                     ) : (
                         <ul className="space-y-3">
-                            {Object.values(portfolio.holdings).map((h) => (
-                                <li key={h.symbol} className="p-3 border rounded shadow-sm bg-white">
-                                    <div className="font-semibold">{h.symbol}</div>
+                            {portfolio.holdings.map((holding) => (
+                                <li key={holding.symbol} className="p-3 border rounded shadow-sm bg-white">
+                                    <div className="font-semibold">{holding.symbol} - {holding.name}</div>
                                     <div className="text-sm text-muted-foreground">
-                                        Quantity: {h.quantity}<br />
-                                        Avg. Buy Price: ${h.price.toLocaleString()}
+                                        Quantity: {holding.quantity}<br />
+                                        Buy Price: ${holding.average_buy_price.toLocaleString()}<br />
+                                        Current Price: ${holding.current_price.toLocaleString()}<br />
+                                        Value: ${holding.value.toLocaleString()}<br />
+                                        Gain/Loss: ${holding.gain_loss.toLocaleString()} ({holding.gain_loss_percent.toFixed(2)}%)
                                     </div>
                                 </li>
                             ))}

@@ -49,7 +49,7 @@ export default function CreatePortfolio() {
         try {
             const created = await api.portfolios.create({
                 name,
-                start_date: date.toISOString(),
+                start_date: format(date, "yyyy-MM-dd"),
                 initial_balance: parseInt(balance),
             })
 

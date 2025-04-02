@@ -9,6 +9,7 @@ import {
     Plus,
     Trash2,
     TrendingUp,
+    TrendingDown
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -109,38 +110,38 @@ export default function PortfolioSelection({
                                     <div className="flex flex-col space-y-1">
                                         <span className="text-sm font-medium text-muted-foreground">Total Value</span>
                                         <span className="flex items-center text-xl font-bold">
-                      <DollarSign className="mr-1 h-4 w-4 text-muted-foreground" />
-                                            {portfolio.totalValue.toLocaleString("en-US", {
+                                            <DollarSign className="mr-1 h-4 w-4 text-muted-foreground" />
+                                            {(portfolio.totalValue || 0).toLocaleString("en-US", {
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2,
                                             })}
-                    </span>
+                                        </span>
                                     </div>
                                     <div className="flex flex-col space-y-1">
                                         <span className="text-sm font-medium text-muted-foreground">Performance</span>
                                         <span
                                             className={`flex items-center text-xl font-bold ${
-                                                portfolio.performance.isPositive ? "text-green-500" : "text-red-500"
+                                                portfolio.performance?.isPositive ? "text-green-500" : "text-red-500"
                                             }`}
                                         >
-                      {portfolio.performance.isPositive ? "+" : "-"}
-                                            {Math.abs(portfolio.performance.percentage).toFixed(2)}%
-                      <TrendingUp
-                          className={`ml-1 h-4 w-4 ${
-                              portfolio.performance.isPositive ? "text-green-500" : "text-red-500"
-                          }`}
-                      />
-                    </span>
+                                            {portfolio.performance?.isPositive ? "+" : "-"}
+                                            {Math.abs(portfolio.performance?.percentage || 0).toFixed(2)}%
+                                            {portfolio.performance?.isPositive ? (
+                                                <TrendingUp className={`ml-1 h-4 w-4 text-green-500`} />
+                                            ) : (
+                                                <TrendingDown className={`ml-1 h-4 w-4 text-red-500`} />
+                                            )}
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="mt-4 flex items-center justify-between text-sm">
                                     <div className="flex items-center">
                                         <Briefcase className="mr-1 h-4 w-4 text-muted-foreground" />
-                                        <span>{portfolio.stocksCount} Stocks</span>
+                                        <span>{portfolio.stocksCount || 0} Stocks</span>
                                     </div>
                                     <div className="flex items-center">
                                         <LineChart className="mr-1 h-4 w-4 text-muted-foreground" />
-                                        <span>${portfolio.cashBalance.toLocaleString()}</span>
+                                        <span>${(portfolio.cashBalance || 0).toLocaleString()}</span>
                                     </div>
                                 </div>
                             </CardContent>
@@ -152,19 +153,17 @@ export default function PortfolioSelection({
                                     View Portfolio
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
-                                <Button
-                                    variant="destructive"
-                                    className="w-full"
-                                    onClick={() => onDeletePortfolio?.(portfolio.id)}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Delete Portfolio
-                                </Button>
+                                {onDeletePortfolio && (
+                                    <Button
+                                        variant="destructive"
+                                        className="w-full"
+                                        onClick={() => onDeletePortfolio(portfolio.id)}
+                                    >
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Delete Portfolio
+                                    </Button>
+                                )}
                             </CardFooter>
-
-
-
-
                         </Card>
                     ))}
                 </div>
