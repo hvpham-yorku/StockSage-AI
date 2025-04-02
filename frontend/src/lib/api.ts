@@ -65,6 +65,17 @@ export interface TradingTip {
 
 // portfolio interfaces
 // Portfolio types
+export interface StockHolding {
+  symbol: string;
+  name: string;
+  quantity: number;
+  average_buy_price: number;
+  current_price: number;
+  value: number;
+  gain_loss: number;
+  gain_loss_percent: number;
+}
+
 export interface Holding {
   symbol: string;
   quantity: number;
@@ -73,18 +84,38 @@ export interface Holding {
 
 export interface Portfolio {
   id: string;
+  user_id: string;
   name: string;
   start_date: string;
   initial_balance: number;
-  holdings?: { [symbol: string]: Holding };
+  current_balance: number;
+  cash_balance: number;
+  performance: number;
+  holdings: StockHolding[];
+  created_at: string;
+  current_date?: string;
+  is_active?: boolean;
+  simulation_speed?: number;
   target_return?: number;
   strategy?: string;
   risk_tolerance?: string;
 }
 
+export interface PortfolioSummary {
+  id: string;
+  name: string;
+  start_date: string;
+  initial_balance: number;
+  current_balance: number;
+  performance: number;
+  current_date?: string;
+  is_active?: boolean;
+}
+
 export interface PortfolioUpdate {
   target_return?: number;
   strategy?: string;
+  risk_tolerance?: string;
 }
 
 
@@ -96,20 +127,38 @@ export interface Transaction {
   date: string;
 }
 
+export interface PerformancePoint {
+  date: string;
+  value: number;
+}
+
 export interface PortfolioPerformance {
   portfolio_id: string;
-  current_value: number;
-  return_percentage: number;
-  profit_loss: number;
+  name: string;
+  initial_balance: number;
+  current_balance: number;
+  performance: number;
+  performance_history: PerformancePoint[];
+  metrics: { [key: string]: number };
 }
 
 export interface PortfolioComparison {
-  id: string;
-  name: string;
-  return_pct: number;
+  portfolios: Array<{
+    id: string;
+    name: string;
+    start_date: string;
+    initial_balance: number;
+    current_balance: number;
+    performance: number;
+    performance_history: PerformancePoint[];
+  }>;
+  comparison_metrics: {
+    total_return: number[];
+    annualized_return: number[];
+    volatility: number[];
+    sharpe_ratio: number[];
+  };
 }
-
-
 
 // Get the current user's ID token
 async function getCurrentUserToken(): Promise<string | null> {
@@ -132,10 +181,10 @@ async function getCurrentUserToken(): Promise<string | null> {
     const token = await user.getIdToken(true);
     console.log('Token successfully retrieved');
     return token;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error getting user token:', error);
     // Handle expired token
-    if (error.code === 'auth/user-token-expired') {
+    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'auth/user-token-expired') {
       console.warn("User token expired, signing out...");
       await auth.signOut(); // Force sign out
       window.location.href = "/login"; // Redirect to login page
@@ -279,7 +328,7 @@ export const api = {
       }),
     
     // Get all portfolios for the current user
-    getAll: () => fetchFromAPI<Portfolio[]>('/api/portfolios'),
+    getAll: () => fetchFromAPI<PortfolioSummary[]>('/api/portfolios'),
     
     // Get a specific portfolio
     getOne: (portfolioId: string) => fetchFromAPI<Portfolio>(`/api/portfolios/${portfolioId}`),
@@ -323,7 +372,7 @@ export const api = {
         }),
 
     // update portfolio
-    update: (portfolioId: string, data: Partial<Portfolio>) =>
+    update: (portfolioId: string, data: PortfolioUpdate) =>
         fetchFromAPI<Portfolio>(`/api/portfolios/${portfolioId}`, {
           method: "PATCH",
           body: JSON.stringify(data),
