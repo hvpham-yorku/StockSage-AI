@@ -72,15 +72,16 @@ export default function PortfolioDetailPage() {
         if (!id || typeof id !== "string") return
         setIsUpdating(true)
         try {
-            setPortfolio((prev) => prev ? {
-                ...prev,
+            await api.portfolios.update(id, {
                 target_return: parseFloat(targetReturn),
                 strategy,
                 risk_tolerance: riskTolerance,
-            } : prev)
-            setMessage("target return, strategy, risk tolerance updated locally.")
+            })
+
+            const updated = await api.portfolios.getOne(id)
+            setPortfolio(updated)
         } catch (e) {
-            console.error("Failed to locally update change:", e)
+            console.error("Failed to update portfolio details:", e)
         } finally {
             setIsUpdating(false)
         }
