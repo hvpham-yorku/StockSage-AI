@@ -14,27 +14,12 @@ interface StockPortfolioProps {
 export default function StockPortfolioFromAPI({ id }: StockPortfolioProps) {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null)
   const [loading, setLoading] = useState(true)
-  const [stocksData, setStocksData] = useState<{ [symbol: string]: { name: string; currentPrice: number } }>({})
 
   useEffect(() => {
-    const fetchPortfolioWithStockPrices = async () => {
+    const fetchPortfolio = async () => {
       try {
         const data = await api.portfolios.getOne(id)
         setPortfolio(data)
-
-        if (data.holdings) {
-          const symbols = Object.keys(data.holdings)
-          const stockInfos = await Promise.all(symbols.map((s) => api.stocks.getOne(s)))
-
-          const priceMap: { [symbol: string]: { name: string; currentPrice: number } } = {}
-          stockInfos.forEach((s) => {
-            priceMap[s.symbol] = {
-              name: s.name,
-              currentPrice: s.price
-            }
-          })
-          setStocksData(priceMap)
-        }
       } catch (error) {
         console.error("Failed to load portfolio data:", error)
       } finally {
@@ -42,29 +27,17 @@ export default function StockPortfolioFromAPI({ id }: StockPortfolioProps) {
       }
     }
 
-    fetchPortfolioWithStockPrices()
+    fetchPortfolio()
   }, [id])
 
   if (loading) return <p>Loading portfolio...</p>
   if (!portfolio) return <p>Portfolio not found</p>
 
-  const cashBalance = portfolio.initial_balance
+  const cashBalance = portfolio.cash_balance || 0
+  const stockList = portfolio.holdings || []
 
-  const stockList = portfolio.holdings
-      ? Object.entries(portfolio.holdings).map(([symbol, holding]) => {
-        const stockInfo = stocksData[symbol] || { name: "", currentPrice: 0 }
-        return {
-          symbol,
-          name: stockInfo.name,
-          shares: holding.quantity,
-          purchasePrice: holding.price,
-          currentPrice: stockInfo.currentPrice
-        }
-      })
-      : []
-
-  const totalInvestments = stockList.reduce((total, s) => total + s.currentPrice * s.shares, 0)
-  const totalGainLoss = stockList.reduce((total, s) => total + (s.currentPrice - s.purchasePrice) * s.shares, 0)
+  const totalInvestments = stockList.reduce((total, s) => total + s.value, 0)
+  const totalGainLoss = stockList.reduce((total, s) => total + s.gain_loss, 0)
   const totalValue = cashBalance + totalInvestments
 
   return (
@@ -140,25 +113,19 @@ export default function StockPortfolioFromAPI({ id }: StockPortfolioProps) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {stockList.map((stock) => {
-                      const marketValue = stock.shares * stock.currentPrice
-                      const gainLoss = (stock.currentPrice - stock.purchasePrice) * stock.shares
-                      const gainLossPercent = ((stock.currentPrice - stock.purchasePrice) / stock.purchasePrice) * 100
-
-                      return (
-                          <TableRow key={stock.symbol}>
-                            <TableCell className="font-medium">{stock.symbol}</TableCell>
-                            <TableCell>{stock.name}</TableCell>
-                            <TableCell>{stock.shares}</TableCell>
-                            <TableCell>${stock.purchasePrice.toFixed(2)}</TableCell>
-                            <TableCell>${stock.currentPrice.toFixed(2)}</TableCell>
-                            <TableCell>${marketValue.toFixed(2)}</TableCell>
-                            <TableCell className={gainLoss >= 0 ? "text-green-500" : "text-red-500"}>
-                              ${gainLoss.toFixed(2)} ({gainLossPercent.toFixed(2)}%)
-                            </TableCell>
-                          </TableRow>
-                      )
-                    })}
+                    {stockList.map((stock) => (
+                      <TableRow key={stock.symbol}>
+                        <TableCell className="font-medium">{stock.symbol}</TableCell>
+                        <TableCell>{stock.name}</TableCell>
+                        <TableCell>{stock.quantity}</TableCell>
+                        <TableCell>${stock.average_buy_price.toFixed(2)}</TableCell>
+                        <TableCell>${stock.current_price.toFixed(2)}</TableCell>
+                        <TableCell>${stock.value.toFixed(2)}</TableCell>
+                        <TableCell className={stock.gain_loss >= 0 ? "text-green-500" : "text-red-500"}>
+                          ${stock.gain_loss.toFixed(2)} ({stock.gain_loss_percent.toFixed(2)}%)
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
             )}
