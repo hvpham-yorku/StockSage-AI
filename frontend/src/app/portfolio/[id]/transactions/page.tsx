@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { api, Transaction } from "@/lib/api"
+import {useEffect, useState} from "react"
+import {useParams, useRouter} from "next/navigation"
+import {api, Transaction} from "@/lib/api"
 import {Button} from "@/components/ui/button";
 
 export default function PortfolioTransactionsPage() {
-    const { id } = useParams()
+    const {id} = useParams()
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [loading, setLoading] = useState(true)
     const router = useRouter()
@@ -29,38 +29,44 @@ export default function PortfolioTransactionsPage() {
     }, [id])
 
     if (loading) return <div className="p-4">Loading transactions...</div>
-    if (transactions.length === 0) return <div className="p-4">No transactions found.</div>
+    // if (transactions.length === 0) return <div className="p-4">No transactions found.</div>
 
     return (
         <main className="p-6 max-w-3xl mx-auto space-y-6">
 
             <div className="flex justify-end">
                 <Button variant="outline" onClick={() => router.push(`/portfolio/${id}`)}>
-                    ← Back to Portfolio {id}
+                    ← Back to Portfolio
                 </Button>
             </div>
 
             <h1 className="text-2xl font-bold mb-4">Transaction History</h1>
-            <ul className="space-y-4">
-                {transactions.map((tx, index) => (
-                    <li
-                        key={index}
-                        className={`p-4 border-l-4 ${
-                            tx.type === "buy" ? "border-green-500" : "border-red-500"
-                        } bg-white shadow-sm rounded`}
-                    >
-                        <div className="flex justify-between items-center">
-                            <span className="font-semibold">{tx.symbol.toUpperCase()}</span>
-                            <span className="text-sm text-muted-foreground">
-                {new Date(tx.date).toLocaleDateString()}
-              </span>
-                        </div>
-                        <div className="text-sm text-muted-foreground mt-1">
-                            {tx.type === "buy" ? "Bought" : "Sold"} {tx.quantity} shares @ ${tx.price.toLocaleString()}
-                        </div>
-                    </li>
-                ))}
-            </ul>
+
+            {transactions.length === 0 ? (
+                <p className="p-4"> No transactions found.</p>
+            ) : (
+                <ul className="space-y-4">
+                    {transactions.map((tx, index) => (
+                        <li
+                            key={index}
+                            className={`p-4 border-l-4 ${
+                                tx.type === "buy" ? "border-green-500" : "border-red-500"
+                            } bg-white shadow-sm rounded`}
+                        >
+                            <div className="flex justify-between items-center">
+                                <span className="font-semibold">{tx.symbol.toUpperCase()}</span>
+                                <span className="text-sm text-muted-foreground">
+                                        {new Date(tx.date).toLocaleDateString()}
+                                    </span>
+                            </div>
+                            <div className="text-sm text-muted-foreground mt-1">
+                                {tx.type === "buy" ? "Bought" : "Sold"} {tx.quantity} shares @
+                                ${tx.price.toLocaleString()}
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </main>
     )
 }
