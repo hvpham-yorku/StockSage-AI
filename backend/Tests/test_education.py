@@ -3,6 +3,16 @@ from stocksage_api.main import app
 
 client = TestClient(app)
 
+# test market cap
+def test_get_market_cap():
+    response = client.get("/api/education/terms/market cap")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["term"].lower() == "market cap"
+    assert "definition" in data
+    assert "related_terms" in data
+    assert "valuation" in data["related_terms"]
+
 def test_get_all_terms():
     response = client.get("/api/education/terms")
     assert response.status_code == 200
