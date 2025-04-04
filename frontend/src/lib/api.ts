@@ -180,6 +180,7 @@ async function getCurrentUserToken(): Promise<string | null> {
     // Force refresh to ensure we get the latest token
     const token = await user.getIdToken(true);
     console.log('Token successfully retrieved');
+    // console.log(token);
     return token;
   } catch (error: unknown) {
     console.error('Error getting user token:', error);
@@ -377,6 +378,33 @@ export const api = {
           method: "PATCH",
           body: JSON.stringify(data),
         }),
+    
+    simulation: {
+      // Start a simulation
+      start: (portfolioId: string, speed: number = 7) =>
+        fetchFromAPI(`/api/portfolios/${portfolioId}/simulation`, {
+          method: 'POST',
+          body: JSON.stringify({ action: "start", simulation_speed: speed })
+        }),
+
+      // Pause a simulation
+      pause: (portfolioId: string) =>
+        fetchFromAPI(`/api/portfolios/${portfolioId}/simulation`, {
+          method: 'POST',
+          body: JSON.stringify({ action: "pause" })
+        }),
+
+      // Get the current simulation status
+      setup: (portfolioId: string) =>
+        fetch(`/api/portfolios/${portfolioId}/firebase-config`, {
+          method: 'POST',
+          body: JSON.stringify({
+            enabled: true,
+            include_holdings: true,
+            include_performance: true
+          })
+        }),
+    },
 
   },
   

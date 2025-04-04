@@ -11,6 +11,7 @@ import { format } from "date-fns"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import SimpleGraph from "@/components/portfolio/perfomance_chart"
 import { useRouter } from "next/navigation"
+import { auth } from "@/firebase/config"
 
 interface DataPoint {
     date: string
@@ -44,6 +45,7 @@ export default function PortfolioDetailPage() {
                 const perf = await api.portfolios.getPerformance(id)
                 const stockList = await api.stocks.getAll()
 
+                console.log("Perfomance history: ", perf.performance_history);
                 setPortfolio(data)
                 setPerformance(perf)
                 setStocks(stockList)
@@ -123,7 +125,7 @@ export default function PortfolioDetailPage() {
                 symbol,
                 quantity: parseInt(quantity),
                 price: parseFloat(price),
-                date: date.toISOString(),
+                date: portfolio?.current_date ? portfolio?.current_date : date.toISOString(),
             }
             if (type === "buy") {
                 await api.portfolios.buyStock(id, request)
@@ -142,6 +144,56 @@ export default function PortfolioDetailPage() {
             setMessage("Trade failed. Please check balance or stock.")
         }
     }
+
+
+    const [simulationStatus, setSimulationStatus] = useState<"running" | "paused" | "stopped">("stopped");
+
+    // useEffect(() => {
+    //     const fetchSimulationStatus = async () => {
+    //         if (!id || typeof id !== "string") return;
+    
+    //         try {
+    //             const status = await api.portfolios.simulation.getStatus(id);
+    //             setSimulationStatus(status); // Expected values: "running", "paused", "stopped"
+    //         } catch (error) {
+    //             console.error("Failed to fetch simulation status:", error);
+    //         }
+    //     };
+    
+    //     fetchSimulationStatus();
+    //     const interval = setInterval(fetchSimulationStatus, 5000); // Fetch every 5 seconds
+    
+    //     return () => clearInterval(interval); // Cleanup on unmount
+    // }, [id]);
+    
+
+    const handleStartSimulation = async () => {
+        if (!id || typeof id !== "string") return;
+    
+        try {
+            await api.portfolios.simulation.start(id, 7);
+            setSimulationStatus("running");
+            setMessage("Simulation started successfully!");
+        } catch (error) {
+            console.error("Failed to start simulation:", error);
+            setMessage("Failed to start simulation.");
+        }
+    };
+    
+    const handlePauseSimulation = async () => {
+        if (!id || typeof id !== "string") return;
+    
+        try {
+            await api.portfolios.simulation.pause(id);
+            setSimulationStatus("paused");
+            setMessage("Simulation paused.");
+        } catch (error) {
+            console.error("Failed to pause simulation:", error);
+            setMessage("Failed to pause simulation.");
+        }
+    };
+    
+    
 
     if (loading) return <div className="p-4">Loading portfolio details...</div>
     if (!portfolio) return <div className="p-4">Portfolio not found</div>
@@ -216,6 +268,25 @@ export default function PortfolioDetailPage() {
                                 />
                             )}
                         </div>
+                        {/* Simulation Controls */}
+                        <div className="mt-4 flex gap-4">
+                            <Button 
+                                onClick={handleStartSimulation} 
+                                className="bg-green-600 hover:bg-green-700 text-white flex-1"
+                                disabled={simulationStatus === "running"}
+                            >
+                                {simulationStatus === "running" ? "Simulation Running..." : "Start Simulation"}
+                            </Button>
+
+                            <Button 
+                                onClick={handlePauseSimulation} 
+                                className="bg-yellow-500 hover:bg-yellow-600 text-white flex-1"
+                                disabled={simulationStatus !== "running"}
+                            >
+                                Pause
+                            </Button>
+                        </div>
+
                     </section>
                 </>
             )}
@@ -296,7 +367,7 @@ export default function PortfolioDetailPage() {
                     <PopoverTrigger asChild>
                         <div>
                             <Button variant="outline" className="w-full justify-start text-left font-normal">
-                                {date ? format(date, "PPP") : "Select trade date"}
+                                {portfolio.current_date}
                             </Button>
                         </div>
                     </PopoverTrigger>

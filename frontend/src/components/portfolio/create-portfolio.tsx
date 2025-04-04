@@ -53,6 +53,8 @@ export default function CreatePortfolio() {
                 initial_balance: parseInt(balance),
             })
 
+            // api.portfolios.simulation.setup(created.id); //Setup simulation
+
             // Redirect to detail page
             router.push(`/portfolio/${created.id}`)
         } catch (error) {
