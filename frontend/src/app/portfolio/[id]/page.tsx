@@ -228,7 +228,7 @@ export default function PortfolioDetailPage() {
                     ) : (
                         <ul className="space-y-3">
                             {portfolio.holdings.map((holding) => (
-                                <li key={holding.symbol} className="p-3 border rounded shadow-sm bg-white">
+                                <li key={holding.symbol} className="p-3 border rounded shadow-sm bg-muted">
                                     <div className="font-semibold">{holding.symbol} - {holding.name}</div>
                                     <div className="text-sm text-muted-foreground">
                                         Quantity: {holding.quantity}<br />
